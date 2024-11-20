@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SL Target</title>
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+</head>
+<body>
+    <div id="target-wrapper" class="hidden">
+        <div id="target-eye">
+            <img src="eye.png" alt="Target Eye">
+        </div>
+        <div id="target-label"></div>
+        <div id="target-options" class="hidden">
+            <div class="options-container">
+                <div class="options-header">
+                    <span id="target-context-label"></span>
+                    <button id="close-options" class="close-button">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+                <div class="options-list" id="options-list"></div>
+            </div>
+        </div>
+    </div>
+    <script src="script.js"></script>
+</body>
+</html>

@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SL Core</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/drawtext.css">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+</head>
+<body>
+    <div id="inventory" style="display: none;">
+        <div class="inventory-container">
+            <div class="inventory-header">
+                <h2>Inventory</h2>
+                <div class="weight-info">
+                    <span id="current-weight">0.0</span>/<span id="max-weight">0.0</span> kg
+                </div>
+            </div>
+            <div class="inventory-grid" id="inventory-grid">
+                <!-- Slots will be dynamically added here -->
+            </div>
+        </div>
+    </div>
+
+    <div id="itembox" style="display: none;">
+        <div class="itembox-container">
+            <div id="itembox-action"></div>
+            <div id="itembox-label"></div>
+            <div id="itembox-image">
+                <img id="itembox-itemimg" src="">
+            </div>
+        </div>
+    </div>
+
+    <div id="drawtext" style="display: none;"></div>
+
+    <div id="notifications">
+        <!-- Notifications will be dynamically added here -->
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="js/app.js"></script>
+    <script src="js/inventory.js"></script>
+    <script src="js/drawtext.js"></script>
+</body>
+</html>
