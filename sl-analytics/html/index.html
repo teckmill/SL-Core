@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Business Analytics Dashboard</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div id="app" class="dashboard" style="display: none;">
+        <div class="sidebar">
+            <div class="logo">
+                <img src="img/logo.png" alt="Logo">
+                <h1>Business Analytics</h1>
+            </div>
+            <nav class="menu">
+                <button class="menu-item active" data-section="overview">
+                    <i class="fas fa-chart-line"></i>
+                    Overview
+                </button>
+                <button class="menu-item" data-section="financial">
+                    <i class="fas fa-dollar-sign"></i>
+                    Financial
+                </button>
+                <button class="menu-item" data-section="inventory">
+                    <i class="fas fa-box"></i>
+                    Inventory
+                </button>
+                <button class="menu-item" data-section="employees">
+                    <i class="fas fa-users"></i>
+                    Employees
+                </button>
+                <button class="menu-item" data-section="customers">
+                    <i class="fas fa-user-friends"></i>
+                    Customers
+                </button>
+                <button class="menu-item" data-section="operations">
+                    <i class="fas fa-cogs"></i>
+                    Operations
+                </button>
+            </nav>
+        </div>
+
+        <main class="content">
+            <header class="top-bar">
+                <div class="business-info">
+                    <h2 id="business-name">Loading...</h2>
+                    <span id="last-updated">Last updated: Never</span>
+                </div>
+                <div class="actions">
+                    <button id="refresh-btn" class="btn">
+                        <i class="fas fa-sync-alt"></i>
+                        Refresh
+                    </button>
+                    <button id="export-btn" class="btn">
+                        <i class="fas fa-file-export"></i>
+                        Export
+                    </button>
+                    <button id="close-btn" class="btn">
+                        <i class="fas fa-times"></i>
+                        Close
+                    </button>
+                </div>
+            </header>
+
+            <div class="dashboard-sections">
+                <!-- Overview Section -->
+                <section id="overview" class="section active">
+                    <div class="metrics-grid">
+                        <div class="metric-card">
+                            <h3>Revenue</h3>
+                            <p class="value" id="overview-revenue">$0</p>
+                            <p class="change positive">+0%</p>
+                        </div>
+                        <div class="metric-card">
+                            <h3>Profit</h3>
+                            <p class="value" id="overview-profit">$0</p>
+                            <p class="change negative">0%</p>
+                        </div>
+                        <div class="metric-card">
+                            <h3>Customers</h3>
+                            <p class="value" id="overview-customers">0</p>
+                            <p class="change positive">+0%</p>
+                        </div>
+                        <div class="metric-card">
+                            <h3>Employee Performance</h3>
+                            <p class="value" id="overview-performance">0%</p>
+                            <p class="change positive">+0%</p>
+                        </div>
+                    </div>
+                    <div class="charts-grid">
+                        <div class="chart-container">
+                            <h3>Revenue Trend</h3>
+                            <canvas id="revenue-trend"></canvas>
+                        </div>
+                        <div class="chart-container">
+                            <h3>Customer Growth</h3>
+                            <canvas id="customer-growth"></canvas>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Other sections will be dynamically populated -->
+                <section id="financial" class="section"></section>
+                <section id="inventory" class="section"></section>
+                <section id="employees" class="section"></section>
+                <section id="customers" class="section"></section>
+                <section id="operations" class="section"></section>
+            </div>
+        </main>
+    </div>
+
+    <!-- Notification System -->
+    <div id="notifications"></div>
+
+    <!-- Report Modal -->
+    <div id="report-modal" class="modal">
+        <div class="modal-content">
+            <h2>Generate Report</h2>
+            <form id="report-form">
+                <div class="form-group">
+                    <label for="report-type">Report Type</label>
+                    <select id="report-type" required>
+                        <option value="financial">Financial Report</option>
+                        <option value="inventory">Inventory Report</option>
+                        <option value="employees">Employee Report</option>
+                        <option value="customers">Customer Report</option>
+                        <option value="operations">Operations Report</option>
+                        <option value="complete">Complete Report</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="date-range">Date Range</label>
+                    <select id="date-range" required>
+                        <option value="daily">Daily</option>
+                        <option value="weekly">Weekly</option>
+                        <option value="monthly">Monthly</option>
+                        <option value="custom">Custom Range</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="export-format">Export Format</label>
+                    <select id="export-format" required>
+                        <option value="pdf">PDF</option>
+                        <option value="csv">CSV</option>
+                        <option value="excel">Excel</option>
+                        <option value="json">JSON</option>
+                    </select>
+                </div>
+                <div class="form-actions">
+                    <button type="button" class="btn cancel">Cancel</button>
+                    <button type="submit" class="btn primary">Generate</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/js/all.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="js/config.js"></script>
+    <script src="js/charts.js"></script>
+    <script src="js/app.js"></script>
+</body>
+</html>
