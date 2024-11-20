@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SL Character Selection</title>
+    <link rel="stylesheet" href="reset.css">
+    <link rel="stylesheet" href="style.css">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="script.js" defer></script>
+</head>
+<body>
+    <div id="container" class="container">
+        <div class="characters-list">
+            <div class="character-list-header">
+                <h1>Select Character</h1>
+                <p>Choose your character or create a new one</p>
+            </div>
+            <div class="character-list-container">
+                <!-- Characters will be dynamically added here -->
+            </div>
+        </div>
+
+        <div class="character-info" style="display: none;">
+            <div class="char-info-header">
+                <h2>Character Information</h2>
+                <button class="back-btn">Back</button>
+            </div>
+            <div class="char-info-content">
+                <!-- Character information will be displayed here -->
+            </div>
+            <div class="char-info-footer">
+                <button class="play-btn">Play</button>
+                <button class="delete-btn">Delete</button>
+            </div>
+        </div>
+
+        <div class="character-register" style="display: none;">
+            <div class="register-header">
+                <h2>Create Character</h2>
+                <button class="back-btn">Back</button>
+            </div>
+            <form id="register-form">
+                <div class="form-group">
+                    <label for="firstname">First Name</label>
+                    <input type="text" id="firstname" name="firstname" required>
+                </div>
+                <div class="form-group">
+                    <label for="lastname">Last Name</label>
+                    <input type="text" id="lastname" name="lastname" required>
+                </div>
+                <div class="form-group">
+                    <label for="nationality">Nationality</label>
+                    <input type="text" id="nationality" name="nationality" required>
+                </div>
+                <div class="form-group">
+                    <label for="birthdate">Birth Date</label>
+                    <input type="date" id="birthdate" name="birthdate" required>
+                </div>
+                <div class="form-group">
+                    <label for="gender">Gender</label>
+                    <select id="gender" name="gender" required>
+                        <option value="Male">Male</option>
+                        <option value="Female">Female</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="spawn">Spawn Location</label>
+                    <select id="spawn" name="spawn" required>
+                        <!-- Spawn locations will be dynamically added here -->
+                    </select>
+                </div>
+                <button type="submit" class="create-btn">Create Character</button>
+            </form>
+        </div>
+    </div>
+
+    <div class="loading-screen" style="display: none;">
+        <div class="loader"></div>
+        <p>Loading...</p>
+    </div>
+</body>
+</html>

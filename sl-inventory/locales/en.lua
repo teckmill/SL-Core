@@ -73,5 +73,10 @@ local Translations = {
     }
 }
 
-Lang = Lang or {}
-Lang.Add('en', Translations)
+if GetConvar('qb_locale', 'en') == 'en' then
+    Lang = Locale:new({
+        phrases = Translations,
+        warnOnMissing = true,
+        fallbackLang = Lang,
+    })
+end

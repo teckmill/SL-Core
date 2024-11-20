@@ -7,13 +7,21 @@ function SLCore.Player.Login(source, citizenid, newData)
     if source and source ~= '' then
         if citizenid then
             local license = SLCore.Functions.GetIdentifier(source, 'license')
-            local PlayerData = MySQL.prepare.await('SELECT * FROM players where citizenid = ?', { citizenid })
+            local PlayerData = MySQL.single.await('SELECT * FROM players where citizenid = ?', { citizenid })
             if PlayerData then
-                PlayerData.money = json.decode(PlayerData.money)
-                PlayerData.job = json.decode(PlayerData.job)
-                PlayerData.position = json.decode(PlayerData.position)
-                PlayerData.metadata = json.decode(PlayerData.metadata)
-                PlayerData.charinfo = json.decode(PlayerData.charinfo)
+                local success = true
+                -- Safe JSON decode with error handling
+                local function safeJSONDecode(str, default)
+                    if not str then return default end
+                    local status, result = pcall(function() return json.decode(str) end)
+                    if status then return result else return default end
+                end
+
+                PlayerData.money = safeJSONDecode(PlayerData.money, {cash = 500, bank = 5000, crypto = 0})
+                PlayerData.job = safeJSONDecode(PlayerData.job, {name = "unemployed", label = "Civilian", payment = 10, onduty = true})
+                PlayerData.position = safeJSONDecode(PlayerData.position, {x = -1035.71, y = -2731.87, z = 12.86, w = 0.0})
+                PlayerData.metadata = safeJSONDecode(PlayerData.metadata, {})
+                PlayerData.charinfo = safeJSONDecode(PlayerData.charinfo, {})
                 
                 local Player = SLCore.Player.CreatePlayer(PlayerData, source)
                 SLCore.Players[source] = Player
@@ -46,9 +54,21 @@ function SLCore.Player.CreatePlayer(PlayerData, source)
         local job = job:lower()
         local grade = tostring(grade) or '0'
 
+        -- Default job configuration if not found
+        local jobConfig = SLCore.Shared.Jobs[job] or {
+            label = "Civilian",
+            defaultDuty = true,
+            grades = {
+                ['0'] = {
+                    name = "Unemployed",
+                    payment = 10
+                }
+            }
+        }
+
         self.PlayerData.job.name = job
         self.PlayerData.job.grade = grade
-        self.PlayerData.job.onduty = Config.Jobs[job].defaultDuty
+        self.PlayerData.job.onduty = jobConfig.defaultDuty
 
         self.Functions.UpdatePlayerData()
         TriggerClientEvent('SLCore:Client:OnJobUpdate', self.PlayerData.source, self.PlayerData.job)
@@ -70,7 +90,8 @@ function SLCore.Player.CreatePlayer(PlayerData, source)
         local moneytype = moneytype:lower()
         local amount = tonumber(amount)
 
-        if amount < 0 then return end
+        if not amount or amount < 0 then return false end
+        if not self.PlayerData.money[moneytype] then return false end
 
         self.PlayerData.money[moneytype] = self.PlayerData.money[moneytype] + amount
 
@@ -86,11 +107,9 @@ function SLCore.Player.CreatePlayer(PlayerData, source)
         local moneytype = moneytype:lower()
         local amount = tonumber(amount)
 
-        if amount < 0 then return end
-
-        if self.PlayerData.money[moneytype] - amount < 0 then
-            return false
-        end
+        if not amount or amount < 0 then return false end
+        if not self.PlayerData.money[moneytype] then return false end
+        if self.PlayerData.money[moneytype] - amount < 0 then return false end
 
         self.PlayerData.money[moneytype] = self.PlayerData.money[moneytype] - amount
 
@@ -102,8 +121,15 @@ function SLCore.Player.CreatePlayer(PlayerData, source)
     end
 
     self.Functions.Save = function()
-        MySQL.Async.execute('UPDATE players SET money = ?, job = ?, position = ?, metadata = ? WHERE citizenid = ?',
-            {json.encode(self.PlayerData.money), json.encode(self.PlayerData.job), json.encode(self.PlayerData.position), json.encode(self.PlayerData.metadata), self.PlayerData.citizenid})
+        if not self.PlayerData.citizenid then return end
+        
+        MySQL.query('UPDATE players SET money = ?, job = ?, position = ?, metadata = ? WHERE citizenid = ?', {
+            json.encode(self.PlayerData.money),
+            json.encode(self.PlayerData.job),
+            json.encode(self.PlayerData.position),
+            json.encode(self.PlayerData.metadata),
+            self.PlayerData.citizenid
+        })
     end
 
     return self
