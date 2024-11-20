@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SL Banking</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div id="banking-container" class="container-fluid d-none">
+        <!-- Main Banking Interface -->
+        <div class="row h-100">
+            <!-- Sidebar Navigation -->
+            <div class="col-md-3 sidebar">
+                <div class="logo-container text-center py-4">
+                    <h2>SL Banking</h2>
+                </div>
+                <div class="nav flex-column">
+                    <button class="nav-link active" data-tab="accounts">
+                        <i class="fas fa-wallet"></i> Accounts
+                    </button>
+                    <button class="nav-link" data-tab="transfers">
+                        <i class="fas fa-exchange-alt"></i> Transfers
+                    </button>
+                    <button class="nav-link" data-tab="investments">
+                        <i class="fas fa-chart-line"></i> Investments
+                    </button>
+                    <button class="nav-link" data-tab="loans">
+                        <i class="fas fa-hand-holding-usd"></i> Loans
+                    </button>
+                </div>
+                <div class="mt-auto p-4">
+                    <button id="close-banking" class="btn btn-danger w-100">
+                        <i class="fas fa-times"></i> Close
+                    </button>
+                </div>
+            </div>
+
+            <!-- Main Content Area -->
+            <div class="col-md-9 main-content">
+                <!-- Accounts Tab -->
+                <div id="accounts" class="content-tab active">
+                    <h3>Your Accounts</h3>
+                    <div id="accounts-list" class="row"></div>
+                    <div class="transactions-container mt-4">
+                        <h4>Recent Transactions</h4>
+                        <div id="transactions-list" class="table-responsive">
+                            <table class="table">
+                                <thead>
+                                    <tr>
+                                        <th>Date</th>
+                                        <th>Description</th>
+                                        <th>Amount</th>
+                                        <th>Balance</th>
+                                    </tr>
+                                </thead>
+                                <tbody></tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Transfers Tab -->
+                <div id="transfers" class="content-tab">
+                    <h3>Make a Transfer</h3>
+                    <form id="transfer-form">
+                        <div class="mb-3">
+                            <label>From Account</label>
+                            <select class="form-control" id="transfer-from"></select>
+                        </div>
+                        <div class="mb-3">
+                            <label>To Account/ID</label>
+                            <input type="text" class="form-control" id="transfer-to" placeholder="Account number or Player ID">
+                        </div>
+                        <div class="mb-3">
+                            <label>Amount</label>
+                            <input type="number" class="form-control" id="transfer-amount">
+                        </div>
+                        <button type="submit" class="btn btn-primary">Transfer</button>
+                    </form>
+                </div>
+
+                <!-- Investments Tab -->
+                <div id="investments" class="content-tab">
+                    <h3>Investment Portfolio</h3>
+                    <div id="investments-list" class="row"></div>
+                    <div class="mt-4">
+                        <h4>New Investment</h4>
+                        <form id="investment-form">
+                            <div class="mb-3">
+                                <label>Investment Type</label>
+                                <select class="form-control" id="investment-type"></select>
+                            </div>
+                            <div class="mb-3">
+                                <label>Amount</label>
+                                <input type="number" class="form-control" id="investment-amount">
+                            </div>
+                            <button type="submit" class="btn btn-primary">Invest</button>
+                        </form>
+                    </div>
+                </div>
+
+                <!-- Loans Tab -->
+                <div id="loans" class="content-tab">
+                    <h3>Your Loans</h3>
+                    <div id="loans-list" class="row"></div>
+                    <div class="mt-4">
+                        <h4>Request New Loan</h4>
+                        <form id="loan-form">
+                            <div class="mb-3">
+                                <label>Loan Type</label>
+                                <select class="form-control" id="loan-type"></select>
+                            </div>
+                            <div class="mb-3">
+                                <label>Amount</label>
+                                <input type="number" class="form-control" id="loan-amount">
+                            </div>
+                            <div class="mb-3">
+                                <label>Term (months)</label>
+                                <input type="number" class="form-control" id="loan-term">
+                            </div>
+                            <button type="submit" class="btn btn-primary">Request Loan</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ATM Interface -->
+    <div id="atm-container" class="container-fluid d-none">
+        <div class="atm-content">
+            <h2 class="text-center mb-4">ATM</h2>
+            <div id="atm-accounts" class="mb-4"></div>
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="card">
+                        <div class="card-body">
+                            <h5 class="card-title">Withdraw</h5>
+                            <form id="withdraw-form">
+                                <div class="mb-3">
+                                    <input type="number" class="form-control" id="withdraw-amount" placeholder="Amount">
+                                </div>
+                                <button type="submit" class="btn btn-primary">Withdraw</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="card">
+                        <div class="card-body">
+                            <h5 class="card-title">Deposit</h5>
+                            <form id="deposit-form">
+                                <div class="mb-3">
+                                    <input type="number" class="form-control" id="deposit-amount" placeholder="Amount">
+                                </div>
+                                <button type="submit" class="btn btn-primary">Deposit</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="text-center mt-4">
+                <button id="close-atm" class="btn btn-danger">
+                    <i class="fas fa-times"></i> Close
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="app.js"></script>
+</body>
+</html>
