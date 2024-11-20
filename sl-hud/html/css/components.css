@@ -1,0 +1,221 @@
+/* Health Component */
+#health .progress-fill {
+    background-color: var(--color-danger);
+}
+
+#health.low {
+    animation: pulse 1s infinite;
+}
+
+/* Armor Component */
+#armor .progress-fill {
+    background-color: var(--color-info);
+}
+
+/* Stamina Component */
+#stamina .progress-fill {
+    background-color: var(--color-warning);
+}
+
+/* Hunger Component */
+#hunger .progress-fill {
+    background-color: var(--color-primary);
+}
+
+#hunger.critical {
+    animation: shake 0.5s infinite;
+}
+
+/* Thirst Component */
+#thirst .progress-fill {
+    background-color: var(--color-secondary);
+}
+
+#thirst.critical {
+    animation: shake 0.5s infinite;
+}
+
+/* Stress Component */
+#stress .progress-fill {
+    background-color: #ff00ff;
+}
+
+/* Vehicle Components */
+.vehicle-item .value {
+    font-size: 1.2em;
+    font-weight: bold;
+}
+
+#speed .unit {
+    font-size: 0.8em;
+    opacity: 0.8;
+}
+
+#fuel.low .progress-fill {
+    animation: pulse 1s infinite;
+}
+
+#damage.critical .progress-fill {
+    animation: pulse 1s infinite;
+}
+
+/* Voice Component */
+.voice-indicator {
+    transition: background-color var(--transition-speed) var(--transition-timing);
+}
+
+.voice-indicator.speaking {
+    animation: pulse 1s infinite;
+}
+
+.voice-indicator.whisper {
+    background-color: var(--color-info);
+}
+
+.voice-indicator.normal {
+    background-color: var(--color-success);
+}
+
+.voice-indicator.shouting {
+    background-color: var(--color-danger);
+}
+
+/* Money Components */
+.money-item .value {
+    font-weight: bold;
+}
+
+.money-item.increase {
+    animation: slideUp 0.3s ease-out;
+    color: var(--color-success);
+}
+
+.money-item.decrease {
+    animation: slideDown 0.3s ease-out;
+    color: var(--color-danger);
+}
+
+/* Job Components */
+.job-item .job-grade {
+    font-size: 0.8em;
+    opacity: 0.8;
+}
+
+.duty-status.on {
+    color: var(--color-success);
+}
+
+.duty-status.off {
+    color: var(--color-danger);
+}
+
+/* Gang Components */
+.gang-item .gang-rank {
+    font-size: 0.8em;
+    opacity: 0.8;
+}
+
+/* Weapon Components */
+.weapon-item .ammo {
+    font-size: 0.9em;
+    opacity: 0.9;
+}
+
+.weapon-item.low-ammo {
+    animation: pulse 1s infinite;
+}
+
+/* Street Components */
+.street-item .zone-name {
+    font-size: 0.8em;
+    opacity: 0.8;
+}
+
+/* Compass Component */
+.compass-bearing {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-weight: bold;
+}
+
+/* Settings Components */
+.setting-item label {
+    display: block;
+    margin-bottom: var(--spacing-xs);
+    font-weight: 500;
+}
+
+.setting-item input[type="range"] {
+    width: 100%;
+}
+
+.setting-item input[type="checkbox"] {
+    margin-right: var(--spacing-xs);
+}
+
+/* Button Styles */
+button {
+    padding: var(--spacing-sm) var(--spacing-md);
+    border: none;
+    border-radius: var(--border-radius-sm);
+    background-color: var(--color-primary);
+    color: var(--color-text);
+    cursor: pointer;
+    transition: background-color var(--transition-speed) var(--transition-timing);
+}
+
+button:hover {
+    background-color: var(--color-secondary);
+}
+
+button#reset-settings {
+    background-color: var(--color-danger);
+}
+
+button#close-settings {
+    background-color: var(--color-text-secondary);
+}
+
+/* Animations */
+@keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.5; }
+}
+
+@keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    25% { transform: translateX(-2px); }
+    75% { transform: translateX(2px); }
+}
+
+@keyframes slideUp {
+    from { transform: translateY(10px); opacity: 0; }
+    to { transform: translateY(0); opacity: 1; }
+}
+
+@keyframes slideDown {
+    from { transform: translateY(-10px); opacity: 0; }
+    to { transform: translateY(0); opacity: 1; }
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .status-item .value {
+        font-size: 0.9em;
+    }
+
+    .progress-bar {
+        width: 80px;
+    }
+
+    .compass-wrapper {
+        width: 150px;
+    }
+
+    .settings-content {
+        width: 95%;
+        padding: var(--spacing-md);
+    }
+}

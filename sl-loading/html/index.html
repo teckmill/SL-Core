@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SL Framework</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <div id="loading-wrapper">
+        <!-- Background -->
+        <div id="background-container">
+            <div id="background-overlay"></div>
+        </div>
+
+        <!-- Main Content -->
+        <div id="content-container">
+            <!-- Header -->
+            <div id="header">
+                <img id="server-logo" src="img/logo.png" alt="Server Logo">
+                <h1 id="server-title">SL Framework</h1>
+                <h2 id="server-subtitle">Welcome to Our Server</h2>
+            </div>
+
+            <!-- Loading Progress -->
+            <div id="loading-container">
+                <div id="loading-progress">
+                    <div id="progress-bar">
+                        <div id="progress-fill"></div>
+                    </div>
+                    <div id="progress-circle"></div>
+                    <div id="progress-dots">
+                        <span class="dot"></span>
+                        <span class="dot"></span>
+                        <span class="dot"></span>
+                    </div>
+                </div>
+                <div id="loading-message">Loading...</div>
+            </div>
+
+            <!-- Tips Section -->
+            <div id="tips-container">
+                <div id="tip-icon">💡</div>
+                <div id="tip-text"></div>
+            </div>
+
+            <!-- Server Info -->
+            <div id="server-info">
+                <div id="info-grid">
+                    <div class="info-item">
+                        <i class="icon discord"></i>
+                        <a href="#" id="discord-link" target="_blank">Join Discord</a>
+                    </div>
+                    <div class="info-item">
+                        <i class="icon website"></i>
+                        <a href="#" id="website-link" target="_blank">Visit Website</a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Music Player -->
+            <div id="music-player">
+                <div id="music-controls">
+                    <button id="music-toggle">
+                        <i class="icon music"></i>
+                    </button>
+                    <div id="music-info">
+                        <span id="track-name">Loading...</span>
+                        <div id="volume-slider">
+                            <input type="range" min="0" max="100" value="30">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/config.js"></script>
+    <script src="js/app.js"></script>
+</body>
+</html>

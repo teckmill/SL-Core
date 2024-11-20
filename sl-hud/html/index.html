@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SL Framework HUD</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/components.css">
+    <link rel="stylesheet" href="css/animations.css">
+</head>
+<body>
+    <div id="hud-wrapper">
+        <!-- Status Elements -->
+        <div id="status-container" class="hud-container">
+            <!-- Health -->
+            <div id="health" class="status-item">
+                <i class="fas fa-heart"></i>
+                <div class="progress-bar">
+                    <div class="progress-fill"></div>
+                </div>
+                <span class="value">100</span>
+            </div>
+
+            <!-- Armor -->
+            <div id="armor" class="status-item">
+                <i class="fas fa-shield-alt"></i>
+                <div class="progress-bar">
+                    <div class="progress-fill"></div>
+                </div>
+                <span class="value">100</span>
+            </div>
+
+            <!-- Stamina -->
+            <div id="stamina" class="status-item">
+                <i class="fas fa-running"></i>
+                <div class="progress-bar">
+                    <div class="progress-fill"></div>
+                </div>
+                <span class="value">100</span>
+            </div>
+
+            <!-- Hunger -->
+            <div id="hunger" class="status-item">
+                <i class="fas fa-hamburger"></i>
+                <div class="progress-bar">
+                    <div class="progress-fill"></div>
+                </div>
+                <span class="value">100</span>
+            </div>
+
+            <!-- Thirst -->
+            <div id="thirst" class="status-item">
+                <i class="fas fa-tint"></i>
+                <div class="progress-bar">
+                    <div class="progress-fill"></div>
+                </div>
+                <span class="value">100</span>
+            </div>
+
+            <!-- Stress -->
+            <div id="stress" class="status-item">
+                <i class="fas fa-brain"></i>
+                <div class="progress-bar">
+                    <div class="progress-fill"></div>
+                </div>
+                <span class="value">0</span>
+            </div>
+        </div>
+
+        <!-- Vehicle HUD -->
+        <div id="vehicle-container" class="hud-container hidden">
+            <!-- Speed -->
+            <div id="speed" class="vehicle-item">
+                <i class="fas fa-tachometer-alt"></i>
+                <span class="value">0</span>
+                <span class="unit">MPH</span>
+            </div>
+
+            <!-- Fuel -->
+            <div id="fuel" class="vehicle-item">
+                <i class="fas fa-gas-pump"></i>
+                <div class="progress-bar">
+                    <div class="progress-fill"></div>
+                </div>
+                <span class="value">100</span>
+            </div>
+
+            <!-- Damage -->
+            <div id="damage" class="vehicle-item">
+                <i class="fas fa-car-crash"></i>
+                <div class="progress-bar">
+                    <div class="progress-fill"></div>
+                </div>
+                <span class="value">100</span>
+            </div>
+        </div>
+
+        <!-- Voice HUD -->
+        <div id="voice-container" class="hud-container">
+            <div id="voice" class="voice-item">
+                <i class="fas fa-microphone"></i>
+                <span class="range">Normal</span>
+                <div class="voice-indicator"></div>
+            </div>
+        </div>
+
+        <!-- Money Display -->
+        <div id="money-container" class="hud-container">
+            <div id="cash" class="money-item">
+                <i class="fas fa-wallet"></i>
+                <span class="value">$0</span>
+            </div>
+            <div id="bank" class="money-item">
+                <i class="fas fa-university"></i>
+                <span class="value">$0</span>
+            </div>
+        </div>
+
+        <!-- Job Info -->
+        <div id="job-container" class="hud-container">
+            <div id="job" class="job-item">
+                <i class="fas fa-briefcase"></i>
+                <span class="job-name">Unemployed</span>
+                <span class="job-grade">N/A</span>
+            </div>
+            <div id="duty" class="job-item">
+                <i class="fas fa-clock"></i>
+                <span class="duty-status">Off Duty</span>
+            </div>
+        </div>
+
+        <!-- Gang Info -->
+        <div id="gang-container" class="hud-container hidden">
+            <div id="gang" class="gang-item">
+                <i class="fas fa-users"></i>
+                <span class="gang-name">None</span>
+                <span class="gang-rank">N/A</span>
+            </div>
+        </div>
+
+        <!-- Weapon Info -->
+        <div id="weapon-container" class="hud-container hidden">
+            <div id="weapon" class="weapon-item">
+                <i class="fas fa-crosshairs"></i>
+                <span class="weapon-name">Unarmed</span>
+                <span class="ammo">0/0</span>
+            </div>
+        </div>
+
+        <!-- Street Name -->
+        <div id="street-container" class="hud-container">
+            <div id="street" class="street-item">
+                <i class="fas fa-road"></i>
+                <span class="street-name">Unknown</span>
+                <span class="zone-name">Los Santos</span>
+            </div>
+        </div>
+
+        <!-- Compass -->
+        <div id="compass-container" class="hud-container">
+            <div id="compass" class="compass-item">
+                <div class="compass-wrapper">
+                    <div class="compass-points"></div>
+                    <div class="compass-bearing">N</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Cinematic Bars -->
+        <div id="cinematic-bars" class="hidden">
+            <div class="bar top"></div>
+            <div class="bar bottom"></div>
+        </div>
+    </div>
+
+    <!-- Settings Menu -->
+    <div id="settings-menu" class="hidden">
+        <div class="settings-content">
+            <h2>HUD Settings</h2>
+            <div class="settings-sections">
+                <!-- General Settings -->
+                <div class="settings-section" data-section="general">
+                    <h3>General</h3>
+                    <div class="setting-item">
+                        <label>Show HUD</label>
+                        <input type="checkbox" id="show-hud" checked>
+                    </div>
+                    <!-- Add more general settings -->
+                </div>
+
+                <!-- Display Settings -->
+                <div class="settings-section" data-section="display">
+                    <h3>Display</h3>
+                    <div class="setting-item">
+                        <label>Scale</label>
+                        <input type="range" id="hud-scale" min="0.5" max="1.5" step="0.1" value="1">
+                    </div>
+                    <!-- Add more display settings -->
+                </div>
+
+                <!-- Layout Settings -->
+                <div class="settings-section" data-section="layout">
+                    <h3>Layout</h3>
+                    <!-- Add layout settings -->
+                </div>
+
+                <!-- Color Settings -->
+                <div class="settings-section" data-section="colors">
+                    <h3>Colors</h3>
+                    <!-- Add color settings -->
+                </div>
+            </div>
+            <div class="settings-buttons">
+                <button id="save-settings">Save</button>
+                <button id="reset-settings">Reset</button>
+                <button id="close-settings">Close</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="js/config.js"></script>
+    <script src="js/utils.js"></script>
+    <script src="js/components.js"></script>
+    <script src="js/app.js"></script>
+</body>
+</html>

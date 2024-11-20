@@ -1,0 +1,260 @@
+/* Reset and Base Styles */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: var(--font-primary);
+    background-color: var(--color-background);
+    color: var(--color-text);
+    overflow: hidden;
+}
+
+:root {
+    /* Colors */
+    --color-primary: #4CAF50;
+    --color-secondary: #2196F3;
+    --color-background: #1E1E1E;
+    --color-text: #FFFFFF;
+    --color-text-secondary: #CCCCCC;
+    
+    /* Fonts */
+    --font-primary: 'Poppins', sans-serif;
+    --font-secondary: 'Roboto', sans-serif;
+    
+    /* Animations */
+    --animation-duration: 500ms;
+}
+
+/* Loading Wrapper */
+#loading-wrapper {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Background */
+#background-container {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: -1;
+}
+
+#background-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.6);
+}
+
+/* Content Container */
+#content-container {
+    width: 80%;
+    max-width: 1200px;
+    text-align: center;
+    z-index: 1;
+}
+
+/* Header */
+#header {
+    margin-bottom: 4rem;
+}
+
+#server-logo {
+    width: 150px;
+    height: auto;
+    margin-bottom: 2rem;
+}
+
+#server-title {
+    font-size: 3rem;
+    font-weight: 700;
+    margin-bottom: 1rem;
+}
+
+#server-subtitle {
+    font-size: 1.5rem;
+    font-weight: 500;
+    color: var(--color-text-secondary);
+}
+
+/* Loading Progress */
+#loading-container {
+    margin-bottom: 3rem;
+}
+
+#loading-progress {
+    margin-bottom: 1rem;
+}
+
+#progress-bar {
+    width: 100%;
+    height: 4px;
+    background-color: rgba(255, 255, 255, 0.1);
+    border-radius: 2px;
+    overflow: hidden;
+}
+
+#progress-fill {
+    width: 0%;
+    height: 100%;
+    background-color: var(--color-primary);
+    transition: width var(--animation-duration) ease;
+}
+
+#progress-circle {
+    display: none;
+    width: 60px;
+    height: 60px;
+    margin: 0 auto;
+    border: 4px solid rgba(255, 255, 255, 0.1);
+    border-top-color: var(--color-primary);
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+#progress-dots {
+    display: none;
+}
+
+.dot {
+    display: inline-block;
+    width: 8px;
+    height: 8px;
+    margin: 0 4px;
+    background-color: var(--color-primary);
+    border-radius: 50%;
+    animation: pulse 1s infinite;
+}
+
+#loading-message {
+    font-size: 1.2rem;
+    color: var(--color-text-secondary);
+}
+
+/* Tips Section */
+#tips-container {
+    margin-bottom: 3rem;
+    padding: 1rem;
+    background-color: rgba(255, 255, 255, 0.05);
+    border-radius: 8px;
+}
+
+#tip-icon {
+    font-size: 1.5rem;
+    margin-bottom: 0.5rem;
+}
+
+#tip-text {
+    font-size: 1.1rem;
+    color: var(--color-text-secondary);
+}
+
+/* Server Info */
+#server-info {
+    margin-bottom: 2rem;
+}
+
+#info-grid {
+    display: flex;
+    justify-content: center;
+    gap: 2rem;
+}
+
+.info-item {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.info-item a {
+    color: var(--color-text);
+    text-decoration: none;
+    font-size: 1.1rem;
+    transition: color var(--animation-duration) ease;
+}
+
+.info-item a:hover {
+    color: var(--color-primary);
+}
+
+/* Music Player */
+#music-player {
+    position: fixed;
+    bottom: 2rem;
+    right: 2rem;
+    background-color: rgba(0, 0, 0, 0.5);
+    padding: 1rem;
+    border-radius: 8px;
+}
+
+#music-controls {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+#music-toggle {
+    background: none;
+    border: none;
+    color: var(--color-text);
+    cursor: pointer;
+    font-size: 1.5rem;
+}
+
+#music-info {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+#track-name {
+    font-size: 0.9rem;
+    color: var(--color-text-secondary);
+}
+
+#volume-slider input {
+    width: 100px;
+}
+
+/* Animations */
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}
+
+@keyframes pulse {
+    0%, 100% { opacity: 0.3; }
+    50% { opacity: 1; }
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    #content-container {
+        width: 90%;
+    }
+
+    #server-title {
+        font-size: 2rem;
+    }
+
+    #server-subtitle {
+        font-size: 1.2rem;
+    }
+
+    #music-player {
+        bottom: 1rem;
+        right: 1rem;
+    }
+}

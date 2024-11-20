@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SL Phone</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/apps.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <div id="phone" class="phone-container">
+        <!-- Phone Frame -->
+        <div class="phone-frame">
+            <!-- Status Bar -->
+            <div class="status-bar">
+                <div class="status-left">
+                    <span class="signal"><i class="fas fa-signal"></i></span>
+                    <span class="carrier">SL Network</span>
+                </div>
+                <div class="status-center">
+                    <span class="time">12:00</span>
+                </div>
+                <div class="status-right">
+                    <span class="battery"><i class="fas fa-battery-full"></i></span>
+                </div>
+            </div>
+
+            <!-- Main Screen -->
+            <div class="main-screen">
+                <!-- Home Screen -->
+                <div id="home-screen" class="screen active">
+                    <div class="app-grid"></div>
+                </div>
+
+                <!-- Apps Screens -->
+                <div id="phone-app" class="screen app-screen">
+                    <div class="app-header">
+                        <button class="back-btn"><i class="fas fa-chevron-left"></i></button>
+                        <span class="title">Phone</span>
+                    </div>
+                    <div class="app-content">
+                        <div class="dial-pad"></div>
+                        <div class="recent-calls"></div>
+                    </div>
+                </div>
+
+                <div id="messages-app" class="screen app-screen">
+                    <div class="app-header">
+                        <button class="back-btn"><i class="fas fa-chevron-left"></i></button>
+                        <span class="title">Messages</span>
+                        <button class="new-message-btn"><i class="fas fa-edit"></i></button>
+                    </div>
+                    <div class="app-content">
+                        <div class="conversations-list"></div>
+                        <div class="message-view hidden">
+                            <div class="chat-header"></div>
+                            <div class="chat-messages"></div>
+                            <div class="chat-input">
+                                <input type="text" placeholder="Message">
+                                <button class="send-btn"><i class="fas fa-paper-plane"></i></button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="contacts-app" class="screen app-screen">
+                    <div class="app-header">
+                        <button class="back-btn"><i class="fas fa-chevron-left"></i></button>
+                        <span class="title">Contacts</span>
+                        <button class="add-contact-btn"><i class="fas fa-plus"></i></button>
+                    </div>
+                    <div class="app-content">
+                        <div class="contacts-list"></div>
+                        <div class="contact-details hidden"></div>
+                    </div>
+                </div>
+
+                <div id="twitter-app" class="screen app-screen">
+                    <div class="app-header">
+                        <button class="back-btn"><i class="fas fa-chevron-left"></i></button>
+                        <span class="title">Twitter</span>
+                        <button class="new-tweet-btn"><i class="fas fa-feather"></i></button>
+                    </div>
+                    <div class="app-content">
+                        <div class="tweets-list"></div>
+                    </div>
+                </div>
+
+                <div id="bank-app" class="screen app-screen">
+                    <div class="app-header">
+                        <button class="back-btn"><i class="fas fa-chevron-left"></i></button>
+                        <span class="title">Bank</span>
+                    </div>
+                    <div class="app-content">
+                        <div class="balance-card"></div>
+                        <div class="transaction-buttons">
+                            <button class="transfer-btn">Transfer</button>
+                            <button class="request-btn">Request</button>
+                        </div>
+                        <div class="transactions-list"></div>
+                    </div>
+                </div>
+
+                <div id="camera-app" class="screen app-screen">
+                    <div class="app-header">
+                        <button class="back-btn"><i class="fas fa-chevron-left"></i></button>
+                        <span class="title">Camera</span>
+                    </div>
+                    <div class="app-content">
+                        <div class="camera-view">
+                            <div class="camera-controls">
+                                <button class="flip-camera"><i class="fas fa-sync"></i></button>
+                                <button class="take-photo"><i class="fas fa-circle"></i></button>
+                                <button class="gallery"><i class="fas fa-images"></i></button>
+                            </div>
+                        </div>
+                        <div class="photo-gallery hidden"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Home Button -->
+            <div class="home-button"></div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="js/config.js"></script>
+    <script src="js/main.js"></script>
+    <script src="js/apps/phone.js"></script>
+    <script src="js/apps/messages.js"></script>
+    <script src="js/apps/contacts.js"></script>
+    <script src="js/apps/twitter.js"></script>
+    <script src="js/apps/bank.js"></script>
+    <script src="js/apps/camera.js"></script>
+</body>
+</html>
