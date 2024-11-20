@@ -1,0 +1,347 @@
+/* Base Styles */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Poppins', sans-serif;
+}
+
+body {
+    width: 100vw;
+    height: 100vh;
+    background: transparent;
+    overflow: hidden;
+}
+
+.hidden {
+    display: none !important;
+}
+
+/* Menu Container */
+.menu-container {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 800px;
+    max-height: 80vh;
+    background: rgba(15, 15, 15, 0.9);
+    border-radius: 10px;
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
+    color: #fff;
+    overflow: hidden;
+}
+
+.menu-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px;
+    background: rgba(30, 30, 30, 0.9);
+    border-bottom: 2px solid rgba(255, 255, 255, 0.1);
+}
+
+.menu-header h2 {
+    font-size: 24px;
+    font-weight: 600;
+}
+
+.close-btn {
+    background: none;
+    border: none;
+    color: #fff;
+    font-size: 20px;
+    cursor: pointer;
+    transition: color 0.3s;
+}
+
+.close-btn:hover {
+    color: #ff4444;
+}
+
+.menu-content {
+    padding: 20px;
+    overflow-y: auto;
+    max-height: calc(80vh - 70px);
+}
+
+/* Property Info */
+.property-info {
+    margin-bottom: 20px;
+    padding: 15px;
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 8px;
+}
+
+.property-name {
+    font-size: 20px;
+    margin-bottom: 10px;
+}
+
+.property-details p {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin: 5px 0;
+    color: #ccc;
+}
+
+.property-details i {
+    width: 20px;
+    text-align: center;
+}
+
+/* Action Buttons */
+.action-buttons {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 15px;
+    margin-top: 20px;
+}
+
+.action-btn {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+    padding: 15px;
+    background: rgba(255, 255, 255, 0.05);
+    border: none;
+    border-radius: 8px;
+    color: #fff;
+    cursor: pointer;
+    transition: all 0.3s;
+}
+
+.action-btn:hover {
+    background: rgba(255, 255, 255, 0.1);
+    transform: translateY(-2px);
+}
+
+.action-btn i {
+    font-size: 24px;
+}
+
+/* Furniture Catalog */
+.category-filters {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 20px;
+    overflow-x: auto;
+    padding-bottom: 10px;
+}
+
+.category-btn {
+    padding: 8px 15px;
+    background: rgba(255, 255, 255, 0.05);
+    border: none;
+    border-radius: 20px;
+    color: #fff;
+    cursor: pointer;
+    transition: all 0.3s;
+    white-space: nowrap;
+}
+
+.category-btn.active {
+    background: #4CAF50;
+}
+
+.furniture-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    gap: 15px;
+}
+
+.furniture-item {
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 8px;
+    padding: 10px;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.3s;
+}
+
+.furniture-item:hover {
+    background: rgba(255, 255, 255, 0.1);
+    transform: translateY(-2px);
+}
+
+.furniture-item img {
+    width: 100%;
+    height: 100px;
+    object-fit: contain;
+    margin-bottom: 10px;
+}
+
+/* Storage Menu */
+.storage-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+}
+
+.storage-container {
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 8px;
+    padding: 15px;
+}
+
+.storage-container h3 {
+    margin-bottom: 15px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.inventory-slots {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 10px;
+}
+
+.inventory-slot {
+    aspect-ratio: 1;
+    background: rgba(0, 0, 0, 0.3);
+    border-radius: 4px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    position: relative;
+    cursor: pointer;
+    transition: all 0.3s;
+}
+
+.inventory-slot:hover {
+    border-color: rgba(255, 255, 255, 0.3);
+}
+
+.inventory-slot img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    padding: 5px;
+}
+
+.item-count {
+    position: absolute;
+    bottom: 5px;
+    right: 5px;
+    background: rgba(0, 0, 0, 0.8);
+    padding: 2px 6px;
+    border-radius: 10px;
+    font-size: 12px;
+}
+
+/* Key Management */
+.key-holders {
+    margin-bottom: 20px;
+}
+
+.key-holder {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px;
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 4px;
+    margin-bottom: 10px;
+}
+
+.key-actions {
+    display: flex;
+    gap: 10px;
+}
+
+/* Settings Menu */
+.settings-grid {
+    display: grid;
+    gap: 20px;
+}
+
+.setting-item {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.setting-item label {
+    color: #ccc;
+}
+
+.setting-item input[type="text"],
+.setting-item select {
+    padding: 8px;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 4px;
+    color: #fff;
+}
+
+.setting-item input[type="range"] {
+    width: 100%;
+}
+
+.save-btn {
+    width: 100%;
+    padding: 12px;
+    background: #4CAF50;
+    border: none;
+    border-radius: 4px;
+    color: #fff;
+    font-weight: 600;
+    cursor: pointer;
+    margin-top: 20px;
+    transition: background 0.3s;
+}
+
+.save-btn:hover {
+    background: #45a049;
+}
+
+/* Scrollbar Styles */
+::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+}
+
+::-webkit-scrollbar-track {
+    background: rgba(255, 255, 255, 0.05);
+}
+
+::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: rgba(255, 255, 255, 0.3);
+}
+
+/* Animations */
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+@keyframes slideUp {
+    from { transform: translate(-50%, -40%); opacity: 0; }
+    to { transform: translate(-50%, -50%); opacity: 1; }
+}
+
+.menu-container {
+    animation: slideUp 0.3s ease-out;
+}
+
+/* Responsive Design */
+@media (max-width: 900px) {
+    .menu-container {
+        width: 90%;
+    }
+}
+
+@media (max-width: 600px) {
+    .storage-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .action-buttons {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}

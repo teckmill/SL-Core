@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SL Housing</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div id="housing-app" class="hidden">
+        <!-- Property Management -->
+        <div id="property-menu" class="menu-container hidden">
+            <div class="menu-header">
+                <h2>Property Management</h2>
+                <button class="close-btn"><i class="fas fa-times"></i></button>
+            </div>
+            <div class="menu-content">
+                <div class="property-info">
+                    <h3 class="property-name">Property Name</h3>
+                    <div class="property-details">
+                        <p><i class="fas fa-map-marker-alt"></i> <span id="property-location">Location</span></p>
+                        <p><i class="fas fa-dollar-sign"></i> <span id="property-value">Value</span></p>
+                        <p><i class="fas fa-tools"></i> <span id="property-condition">Condition</span></p>
+                    </div>
+                </div>
+                <div class="action-buttons">
+                    <button class="action-btn" data-action="furniture">
+                        <i class="fas fa-couch"></i>
+                        <span>Furniture</span>
+                    </button>
+                    <button class="action-btn" data-action="storage">
+                        <i class="fas fa-box"></i>
+                        <span>Storage</span>
+                    </button>
+                    <button class="action-btn" data-action="keys">
+                        <i class="fas fa-key"></i>
+                        <span>Keys</span>
+                    </button>
+                    <button class="action-btn" data-action="settings">
+                        <i class="fas fa-cog"></i>
+                        <span>Settings</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Furniture Catalog -->
+        <div id="furniture-menu" class="menu-container hidden">
+            <div class="menu-header">
+                <h2>Furniture Catalog</h2>
+                <button class="close-btn"><i class="fas fa-times"></i></button>
+            </div>
+            <div class="menu-content">
+                <div class="category-filters">
+                    <button class="category-btn active" data-category="all">All</button>
+                    <button class="category-btn" data-category="seating">Seating</button>
+                    <button class="category-btn" data-category="storage">Storage</button>
+                    <button class="category-btn" data-category="lighting">Lighting</button>
+                    <button class="category-btn" data-category="decoration">Decoration</button>
+                </div>
+                <div class="furniture-grid" id="furniture-items">
+                    <!-- Furniture items will be populated dynamically -->
+                </div>
+            </div>
+        </div>
+
+        <!-- Storage Menu -->
+        <div id="storage-menu" class="menu-container hidden">
+            <div class="menu-header">
+                <h2>Storage</h2>
+                <button class="close-btn"><i class="fas fa-times"></i></button>
+            </div>
+            <div class="menu-content">
+                <div class="storage-grid">
+                    <div class="storage-container player-inventory">
+                        <h3>Inventory</h3>
+                        <div class="inventory-slots" id="player-inventory">
+                            <!-- Player inventory slots will be populated dynamically -->
+                        </div>
+                    </div>
+                    <div class="storage-container property-storage">
+                        <h3>Property Storage</h3>
+                        <div class="inventory-slots" id="property-storage">
+                            <!-- Property storage slots will be populated dynamically -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Key Management -->
+        <div id="key-menu" class="menu-container hidden">
+            <div class="menu-header">
+                <h2>Key Management</h2>
+                <button class="close-btn"><i class="fas fa-times"></i></button>
+            </div>
+            <div class="menu-content">
+                <div class="key-holders">
+                    <h3>Current Key Holders</h3>
+                    <div id="key-holder-list">
+                        <!-- Key holders will be populated dynamically -->
+                    </div>
+                </div>
+                <div class="key-actions">
+                    <button class="action-btn" data-action="give-key">
+                        <i class="fas fa-plus"></i>
+                        <span>Give Key</span>
+                    </button>
+                    <button class="action-btn" data-action="remove-key">
+                        <i class="fas fa-minus"></i>
+                        <span>Remove Key</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Settings Menu -->
+        <div id="settings-menu" class="menu-container hidden">
+            <div class="menu-header">
+                <h2>Property Settings</h2>
+                <button class="close-btn"><i class="fas fa-times"></i></button>
+            </div>
+            <div class="menu-content">
+                <div class="settings-grid">
+                    <div class="setting-item">
+                        <label>Property Name</label>
+                        <input type="text" id="setting-name" placeholder="Enter property name">
+                    </div>
+                    <div class="setting-item">
+                        <label>Security Level</label>
+                        <select id="setting-security">
+                            <option value="1">Basic</option>
+                            <option value="2">Advanced</option>
+                            <option value="3">Premium</option>
+                        </select>
+                    </div>
+                    <div class="setting-item">
+                        <label>Interior Lighting</label>
+                        <input type="range" id="setting-lighting" min="0" max="100">
+                    </div>
+                    <div class="setting-item">
+                        <label>Auto-Lock</label>
+                        <input type="checkbox" id="setting-autolock">
+                    </div>
+                </div>
+                <button class="save-btn">Save Settings</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="config.js"></script>
+    <script src="app.js"></script>
+</body>
+</html>
