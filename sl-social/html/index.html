@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SL Social</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <div id="app" class="hidden">
+        <!-- Phone Container -->
+        <div class="phone-container">
+            <!-- Navigation -->
+            <div class="nav-bar">
+                <div class="nav-item active" data-tab="social">
+                    <i class="fas fa-globe"></i>
+                    <span>Social</span>
+                </div>
+                <div class="nav-item" data-tab="messages">
+                    <i class="fas fa-comments"></i>
+                    <span>Messages</span>
+                </div>
+                <div class="nav-item" data-tab="dating">
+                    <i class="fas fa-heart"></i>
+                    <span>Dating</span>
+                </div>
+                <div class="nav-item" data-tab="reputation">
+                    <i class="fas fa-star"></i>
+                    <span>Rep</span>
+                </div>
+            </div>
+
+            <!-- Content Area -->
+            <div class="content">
+                <!-- Social Tab -->
+                <div id="social" class="tab-content active">
+                    <div class="post-form">
+                        <textarea placeholder="What's on your mind?"></textarea>
+                        <button class="post-btn">Post</button>
+                    </div>
+                    <div class="posts-container"></div>
+                </div>
+
+                <!-- Messages Tab -->
+                <div id="messages" class="tab-content">
+                    <div class="contacts-list"></div>
+                    <div class="chat-container">
+                        <div class="chat-messages"></div>
+                        <div class="message-input">
+                            <textarea placeholder="Type a message..."></textarea>
+                            <button class="send-btn">Send</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Dating Tab -->
+                <div id="dating" class="tab-content">
+                    <div class="profile-container">
+                        <div class="profile-cards"></div>
+                        <div class="profile-actions">
+                            <button class="like-btn"><i class="fas fa-heart"></i></button>
+                            <button class="dislike-btn"><i class="fas fa-times"></i></button>
+                        </div>
+                    </div>
+                    <div class="matches-container"></div>
+                </div>
+
+                <!-- Reputation Tab -->
+                <div id="reputation" class="tab-content">
+                    <div class="reputation-stats"></div>
+                    <div class="recent-ratings"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src="js/app.js"></script>
+</body>
+</html>
