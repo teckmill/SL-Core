@@ -36,55 +36,173 @@ Config.JobCategories = {
     'government'
 }
 
--- Default Jobs (Example structure)
+-- Job Settings
 Config.Jobs = {
     police = {
-        label = 'Police Department',
-        category = 'emergency',
-        defaultDuty = true,
+        label = "Police Department",
+        defaultDuty = false,
         offDutyPay = false,
         grades = {
-            [0] = {
-                name = 'cadet',
-                label = 'Cadet',
-                payment = 100,
-                skills = {
-                    required = {},
-                    gainRate = {
-                        shooting = 0.2,
-                        driving = 0.2
-                    }
+            ['0'] = {
+                name = "Cadet",
+                payment = 1500,
+                rankUp = {
+                    hoursRequired = 20,
+                    rankTest = true
                 }
             },
-            -- Add more grades
+            ['1'] = {
+                name = "Officer",
+                payment = 2000,
+                rankUp = {
+                    hoursRequired = 40,
+                    rankTest = true
+                }
+            },
+            ['2'] = {
+                name = "Senior Officer",
+                payment = 2500,
+                rankUp = {
+                    hoursRequired = 80,
+                    rankTest = true
+                }
+            },
+            ['3'] = {
+                name = "Sergeant",
+                payment = 3000,
+                rankUp = {
+                    hoursRequired = 120,
+                    rankTest = true
+                }
+            },
+            ['4'] = {
+                name = "Lieutenant",
+                payment = 3500,
+                canManage = true
+            },
+            ['5'] = {
+                name = "Chief",
+                payment = 4000,
+                isBoss = true
+            }
         },
         locations = {
-            duty = {
-                [1] = vector4(440.085, -974.924, 30.689, 90.654),
-            },
-            vehicles = {
-                [1] = vector4(446.226, -991.525, 25.699, 180.654),
-            }
-        },
-        vehicles = {
-            [0] = {
-                ['police'] = 'Police Car',
-                ['police2'] = 'Police SUV'
-            }
-        },
-        uniforms = {
-            [0] = {
-                male = {
-                    ['tshirt_1'] = 59,
-                    ['tshirt_2'] = 1,
+            ["mrpd"] = {
+                duty = {
+                    coords = vector4(441.7989, -982.0529, 30.67834, 11.0),
+                    radius = 1.5,
+                    label = "Duty Station"
                 },
-                female = {
-                    ['tshirt_1'] = 36,
-                    ['tshirt_2'] = 1,
+                armory = {
+                    coords = vector4(481.4974, -995.7716, 30.68959, 28.0),
+                    radius = 1.5,
+                    label = "Armory"
+                },
+                garage = {
+                    coords = vector4(454.6, -1017.4, 28.4, 90.0),
+                    radius = 4.0,
+                    label = "Garage",
+                    vehicles = {
+                        ["police"] = "Police Cruiser",
+                        ["police2"] = "Police SUV",
+                        ["police3"] = "Police Van"
+                    }
+                }
+            }
+        }
+    },
+    ambulance = {
+        label = "Emergency Medical Services",
+        defaultDuty = false,
+        offDutyPay = false,
+        grades = {
+            ['0'] = {
+                name = "EMT Trainee",
+                payment = 1500,
+                rankUp = {
+                    hoursRequired = 20,
+                    rankTest = true
+                }
+            },
+            ['1'] = {
+                name = "EMT",
+                payment = 2000,
+                rankUp = {
+                    hoursRequired = 40,
+                    rankTest = true
+                }
+            },
+            ['2'] = {
+                name = "Senior EMT",
+                payment = 2500,
+                rankUp = {
+                    hoursRequired = 80,
+                    rankTest = true
+                }
+            },
+            ['3'] = {
+                name = "Paramedic",
+                payment = 3000,
+                rankUp = {
+                    hoursRequired = 120,
+                    rankTest = true
+                }
+            },
+            ['4'] = {
+                name = "Senior Paramedic",
+                payment = 3500,
+                canManage = true
+            },
+            ['5'] = {
+                name = "Chief of EMS",
+                payment = 4000,
+                isBoss = true
+            }
+        },
+        locations = {
+            ["pillbox"] = {
+                duty = {
+                    coords = vector4(311.2454, -592.9298, 43.28405, 341.0),
+                    radius = 1.5,
+                    label = "Duty Station"
+                },
+                garage = {
+                    coords = vector4(294.578, -574.7617, 43.1849, 35.0),
+                    radius = 4.0,
+                    label = "Garage",
+                    vehicles = {
+                        ["ambulance"] = "Ambulance",
+                        ["emscar"] = "Response Vehicle"
+                    }
                 }
             }
         }
     }
+}
+
+-- Duty Settings
+Config.Duty = {
+    useTarget = true, -- Use target system instead of key press
+    dutyKey = 'E', -- Key to toggle duty if not using target
+    notifyType = 'sl-core', -- Notification system to use
+    blips = {
+        police = {
+            onDuty = {sprite = 60, color = 29},
+            offDuty = {sprite = 60, color = 3}
+        },
+        ambulance = {
+            onDuty = {sprite = 61, color = 1},
+            offDuty = {sprite = 61, color = 3}
+        }
+    }
+}
+
+-- Rank Settings
+Config.RankUp = {
+    enabled = true,
+    notifyBeforeTest = true, -- Notify when eligible for rank test
+    testCooldown = 7, -- Days between test attempts
+    minimumScore = 75 -- Minimum score to pass rank test (%)
 }
 
 -- Skills Configuration

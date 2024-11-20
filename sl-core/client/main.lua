@@ -1,75 +1,52 @@
-SLCore = {}
-SLCore.PlayerData = {}
-SLCore.Config = SLConfig
-SLCore.Functions = {}
-SLCore.RequestId = 0
-SLCore.ServerCallbacks = {}
-SLCore.TimeoutCallbacks = {}
+local SLCore = {}
+local PlayerData = {}
+local isLoggedIn = false
 
+-- Core Functions
 function SLCore.Functions.GetPlayerData(cb)
     if cb then
-        cb(SLCore.PlayerData)
+        cb(PlayerData)
     else
-        return SLCore.PlayerData
+        return PlayerData
     end
 end
 
-function SLCore.Functions.DrawText(x, y, width, height, scale, r, g, b, a, text)
-    SetTextFont(4)
-    SetTextProportional(0)
-    SetTextScale(scale, scale)
-    SetTextColour(r, g, b, a)
-    SetTextDropShadow(0, 0, 0, 0,255)
-    SetTextEdge(2, 0, 0, 0, 255)
-    SetTextDropShadow()
-    SetTextOutline()
-    SetTextEntry("STRING")
-    AddTextComponentString(text)
-    DrawText(x - width/2, y - height/2 + 0.005)
-end
-
-function SLCore.Functions.Notify(text, type, length)
-    if type == nil then type = "primary" end
-    if length == nil then length = 5000 end
-    SendNUIMessage({
-        action = 'notify',
-        type = type,
-        length = length,
-        text = text,
-    })
-end
-
-function SLCore.Functions.TriggerCallback(name, cb, ...)
-    SLCore.ServerCallbacks[SLCore.RequestId] = cb
-    TriggerServerEvent('sl-core:server:triggerCallback', name, SLCore.RequestId, ...)
-    SLCore.RequestId = SLCore.RequestId + 1
+function SLCore.Functions.IsPlayerLoaded()
+    return isLoggedIn
 end
 
 -- Events
-RegisterNetEvent('sl-core:client:updatePlayerData')
-AddEventHandler('sl-core:client:updatePlayerData', function(data)
-    SLCore.PlayerData = data
+RegisterNetEvent('sl-core:client:playerLoaded', function(data)
+    PlayerData = data
+    isLoggedIn = true
+    
+    -- Set routing bucket
+    SetRoutingBucketEntityLockdownMode(PlayerData.id, 'strict')
+    
+    -- Spawn player
+    exports['spawnmanager']:spawnPlayer({
+        x = PlayerData.position.x,
+        y = PlayerData.position.y,
+        z = PlayerData.position.z,
+        heading = PlayerData.position.w,
+        model = PlayerData.model or 'mp_m_freemode_01'
+    }, function()
+        TriggerEvent('sl-core:client:playerSpawned')
+    end)
 end)
 
-RegisterNetEvent('sl-core:client:moneyChange')
-AddEventHandler('sl-core:client:moneyChange', function(type, amount, operation, reason)
-    if operation == "add" then
-        SLCore.Functions.Notify('$'..amount..' added ('..reason..')', 'success')
-    else
-        SLCore.Functions.Notify('$'..amount..' removed ('..reason..')', 'error')
-    end
+RegisterNetEvent('sl-core:client:onPlayerUnload', function()
+    isLoggedIn = false
+    PlayerData = {}
 end)
 
--- Export
+RegisterNetEvent('sl-core:client:OnMoneyChange', function(type, amount, action)
+    PlayerData.money[type] = amount
+    TriggerEvent('sl-hud:client:OnMoneyChange', type, amount, action)
+end)
+
+-- Exports
 exports('GetCoreObject', function()
     return SLCore
 end)
 
--- Initialize
-Citizen.CreateThread(function()
-    while true do
-        SetCanAttackFriendly(PlayerPedId(), true, false)
-        NetworkSetFriendlyFireOption(true)
-        Citizen.Wait(100)
-    end
-end)

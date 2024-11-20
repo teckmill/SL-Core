@@ -154,3 +154,45 @@ end
 function SLCore.Debug(resource, obj, depth)
     TriggerEvent('sl-core:server:debug', resource, obj, depth)
 end
+
+-- Player Functions
+function SLCore.Functions.GetPlayers()
+    local sources = {}
+    for k, v in pairs(SLCore.Players) do
+        sources[#sources+1] = k
+    end
+    return sources
+end
+
+-- Permission Functions
+function SLCore.Functions.HasPermission(source, permission)
+    if type(permission) == "string" then
+        if SLCore.Config.Server.PermissionList[permission] then
+            if SLCore.Config.Server.PermissionList[permission][tostring(source)] then
+                return true
+            end
+        end
+    elseif type(permission) == "table" then
+        for _, perm in pairs(permission) do
+            if SLCore.Config.Server.PermissionList[perm] then
+                if SLCore.Config.Server.PermissionList[perm][tostring(source)] then
+                    return true
+                end
+            end
+        end
+    end
+    return false
+end
+
+function SLCore.Functions.AddPermission(source, permission)
+    if not SLCore.Config.Server.PermissionList[permission] then
+        SLCore.Config.Server.PermissionList[permission] = {}
+    end
+    SLCore.Config.Server.PermissionList[permission][tostring(source)] = true
+end
+
+function SLCore.Functions.RemovePermission(source, permission)
+    if SLCore.Config.Server.PermissionList[permission] then
+        SLCore.Config.Server.PermissionList[permission][tostring(source)] = nil
+    end
+end

@@ -7,6 +7,15 @@ SLCore.Commands = {}
 SLCore.RequestId = 0
 SLCore.Callbacks = {}
 
+-- Initialize Locale System
+SLCore.Shared.Languages = {}
+SLCore.Shared.CurrentLanguage = 'en'
+
+-- Export core object
+exports('GetCoreObject', function()
+    return SLCore
+end)
+
 -- Version check
 SLCore.Config.Version = '1.0.0'
 
@@ -90,7 +99,30 @@ function SLCore.Shared.Round(value, numDecimalPlaces)
     end
 end
 
--- Export core object
-exports('GetCoreObject', function()
-    return SLCore
+-- Initialize default locale
+CreateThread(function()
+    Wait(0) -- Wait for all resources to load
+    
+    -- Add default English translations
+    SLCore.Shared.Locale('en', {
+        error = {
+            generic = "An error occurred",
+            invalid_value = "Invalid value provided",
+            missing_param = "Missing required parameter",
+            not_authorized = "Not authorized to perform this action",
+        },
+        success = {
+            generic = "Operation successful",
+            saved = "Changes saved successfully",
+            loaded = "Data loaded successfully",
+        },
+        info = {
+            loading = "Loading...",
+            processing = "Processing...",
+            waiting = "Please wait...",
+        }
+    })
 end)
+
+-- Make core object globally accessible
+_G.SLCore = SLCore

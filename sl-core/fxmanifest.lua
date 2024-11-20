@@ -1,20 +1,18 @@
 fx_version 'cerulean'
 game 'gta5'
 
-description 'SL-Core - Core resource for the SL Framework'
+description 'SL-Core Framework'
 version '1.0.0'
 
 shared_scripts {
-    'shared/locale.lua',
-    'locale/en.lua',
     'shared/main.lua',
+    'shared/functions.lua',
     'shared/items.lua',
     'shared/jobs.lua',
     'shared/vehicles.lua',
     'shared/gangs.lua',
     'shared/weapons.lua',
     'shared/locations.lua',
-    'config.lua'
 }
 
 client_scripts {
@@ -22,9 +20,7 @@ client_scripts {
     'client/functions.lua',
     'client/loops.lua',
     'client/events.lua',
-    'client/drawtext.lua',
-    'client/vehicle.lua',
-    'client/inventory.lua',
+    'client/commands.lua'
 }
 
 server_scripts {
@@ -34,24 +30,23 @@ server_scripts {
     'server/player.lua',
     'server/events.lua',
     'server/commands.lua',
-    'server/debug.lua',
-    'server/exports.lua',
-    'server/inventory.lua',
-    'server/vehicle.lua',
-    'server/permissions.lua',
+    'server/debug.lua'
 }
 
 ui_page 'html/index.html'
 
 files {
     'html/index.html',
-    'html/styles.css',
-    'html/script.js'
+    'html/css/*.css',
+    'html/js/*.js',
+    'html/img/*.png',
+    'html/img/*.jpg',
+    'html/img/*.gif',
+    'locales/*.lua'
 }
 
 dependencies {
-    'oxmysql',
-    'progressbar'
+    'oxmysql'
 }
 
 lua54 'yes'

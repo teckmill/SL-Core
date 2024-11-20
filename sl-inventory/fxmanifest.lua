@@ -1,7 +1,7 @@
 fx_version 'cerulean'
 game 'gta5'
 
-description 'SL-Inventory - Modern Inventory System for SL-Core'
+description 'SL-Inventory - Advanced Inventory System'
 version '1.0.0'
 
 shared_scripts {
@@ -12,29 +12,36 @@ shared_scripts {
 
 client_scripts {
     'client/main.lua',
-    'client/inventory.lua',
-    'client/hotbar.lua',
-    'client/drops.lua'
+    'client/functions.lua',
+    'client/drops.lua',
+    'client/shops.lua',
+    'client/trunk.lua',
+    'client/glovebox.lua',
+    'client/weapons.lua'
 }
 
 server_scripts {
     '@oxmysql/lib/MySQL.lua',
     'server/main.lua',
-    'server/inventory.lua',
+    'server/functions.lua',
     'server/drops.lua',
-    'server/crafting.lua'
+    'server/shops.lua',
+    'server/weapons.lua'
 }
 
 ui_page 'html/index.html'
 
 files {
     'html/index.html',
-    'html/styles.css',
-    'html/script.js',
-    'html/assets/*.png',
-    'html/assets/*.jpg',
-    'html/assets/*.svg'
+    'html/css/*.css',
+    'html/js/*.js',
+    'html/img/*.png',
+    'html/img/*.jpg'
 }
 
 lua54 'yes'
-use_experimental_fxv2_oal 'yes'
+
+dependencies {
+    'sl-core',
+    'oxmysql'
+}

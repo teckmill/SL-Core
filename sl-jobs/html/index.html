@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SL Jobs Management</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div id="management-container" class="container-fluid d-none">
+        <div class="row h-100">
+            <!-- Sidebar -->
+            <div class="col-md-3 sidebar">
+                <div class="logo-container text-center py-4">
+                    <h2>Job Management</h2>
+                </div>
+                <div class="nav flex-column">
+                    <button class="nav-link active" data-tab="employees">
+                        <i class="fas fa-users"></i> Employees
+                    </button>
+                    <button class="nav-link" data-tab="applications">
+                        <i class="fas fa-file-alt"></i> Applications
+                    </button>
+                    <button class="nav-link" data-tab="finances">
+                        <i class="fas fa-money-bill"></i> Finances
+                    </button>
+                    <button class="nav-link" data-tab="settings">
+                        <i class="fas fa-cog"></i> Settings
+                    </button>
+                </div>
+                <div class="mt-auto p-4">
+                    <button id="close-management" class="btn btn-danger w-100">
+                        <i class="fas fa-times"></i> Close
+                    </button>
+                </div>
+            </div>
+
+            <!-- Main Content -->
+            <div class="col-md-9 main-content">
+                <!-- Employees Tab -->
+                <div id="employees-tab" class="tab-content active">
+                    <div class="header">
+                        <h3>Employee Management</h3>
+                        <button class="btn btn-primary" id="refresh-employees">
+                            <i class="fas fa-sync"></i> Refresh
+                        </button>
+                    </div>
+                    <div class="content">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>Name</th>
+                                    <th>Grade</th>
+                                    <th>Status</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="employees-list"></tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Applications Tab -->
+                <div id="applications-tab" class="tab-content">
+                    <div class="header">
+                        <h3>Job Applications</h3>
+                        <button class="btn btn-primary" id="refresh-applications">
+                            <i class="fas fa-sync"></i> Refresh
+                        </button>
+                    </div>
+                    <div class="content">
+                        <div id="applications-list"></div>
+                    </div>
+                </div>
+
+                <!-- Finances Tab -->
+                <div id="finances-tab" class="tab-content">
+                    <div class="header">
+                        <h3>Financial Management</h3>
+                    </div>
+                    <div class="content">
+                        <div class="balance-card">
+                            <h4>Society Balance</h4>
+                            <h2 id="society-balance">$0</h2>
+                        </div>
+                        <div class="actions">
+                            <button class="btn btn-success" id="deposit-money">
+                                <i class="fas fa-plus"></i> Deposit
+                            </button>
+                            <button class="btn btn-warning" id="withdraw-money">
+                                <i class="fas fa-minus"></i> Withdraw
+                            </button>
+                        </div>
+                        <div class="transactions">
+                            <h4>Recent Transactions</h4>
+                            <div id="transactions-list"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Settings Tab -->
+                <div id="settings-tab" class="tab-content">
+                    <div class="header">
+                        <h3>Job Settings</h3>
+                    </div>
+                    <div class="content">
+                        <!-- Add your settings content here -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="app.js"></script>
+</body>
+</html> 

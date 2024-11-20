@@ -32,6 +32,7 @@ client_scripts {
 }
 
 server_scripts {
+    '@oxmysql/lib/MySQL.lua',
     'server/main.lua',
     'server/version.lua'
 }
@@ -44,4 +45,9 @@ files {
     'html/img/*.png',
     'html/img/*.jpg',
     'html/img/*.svg'
+}
+
+dependencies {
+    'oxmysql',
+    'sl-core'
 }

@@ -5,37 +5,41 @@ local CreditScores = {}
 local Investments = {}
 local Loans = {}
 
--- Database initialization
+-- Initialize cache
 CreateThread(function()
-    -- Load SQL schema and functions
-    local schema = LoadResourceFile(GetCurrentResourceName(), 'sql/schema.sql')
-    local functions = LoadResourceFile(GetCurrentResourceName(), 'sql/functions.sql')
-    
-    -- Execute schema and functions
-    MySQL.query(schema)
-    MySQL.query(functions)
-    
-    -- Initialize cache
-    LoadAccounts()
-    LoadInvestments()
-    LoadLoans()
+    MySQL.ready(function()
+        -- Create tables if they don't exist
+        local sqlFile = LoadResourceFile(GetCurrentResourceName(), 'sql/banking.sql')
+        if sqlFile then
+            -- Split and execute SQL statements individually
+            for statement in sqlFile:gmatch("([^;]+);") do
+                statement = statement:gsub("^%s+", ""):gsub("%s+$", "") -- Trim whitespace
+                if statement ~= "" then
+                    MySQL.Sync.execute(statement)
+                end
+            end
+        end
+
+        LoadAccounts()
+        LoadInvestments()
+        LoadLoans()
+    end)
 end)
 
 -- Load all accounts from database
 function LoadAccounts()
-    local result = MySQL.query.await('SELECT * FROM sl_bank_accounts WHERE status = ?', {'active'})
+    local result = MySQL.query.await('SELECT * FROM bank_accounts WHERE frozen = ?', {0})
     if result then
         for _, account in ipairs(result) do
-            Accounts[account.account_number] = {
+            Accounts[account.id] = {
                 id = account.id,
                 type = account.type,
-                owner = account.owner_identifier,
+                identifier = account.identifier,
                 balance = account.balance,
-                pin = account.pin,
-                creditScore = account.credit_score,
-                status = account.status
+                name = account.name,
+                authorized = json.decode(account.authorized or '[]')
             }
-            LoadTransactions(account.id, account.account_number)
+            LoadTransactions(account.id, account.id)
         end
     end
 end
@@ -43,17 +47,17 @@ end
 -- Load investments
 function LoadInvestments()
     local result = MySQL.query.await([[
-        SELECT i.*, a.account_number 
-        FROM sl_bank_investments i 
-        JOIN sl_bank_accounts a ON i.account_id = a.id 
+        SELECT i.*, a.id 
+        FROM bank_investments i 
+        JOIN bank_accounts a ON i.account_id = a.id 
         WHERE i.status = 'active'
     ]])
     if result then
         for _, investment in ipairs(result) do
-            if not Investments[investment.account_number] then
-                Investments[investment.account_number] = {}
+            if not Investments[investment.id] then
+                Investments[investment.id] = {}
             end
-            table.insert(Investments[investment.account_number], {
+            table.insert(Investments[investment.id], {
                 id = investment.id,
                 type = investment.type,
                 amount = investment.amount,
@@ -67,17 +71,17 @@ end
 -- Load loans
 function LoadLoans()
     local result = MySQL.query.await([[
-        SELECT l.*, a.account_number 
-        FROM sl_bank_loans l 
-        JOIN sl_bank_accounts a ON l.account_id = a.id 
+        SELECT l.*, a.id 
+        FROM bank_loans l 
+        JOIN bank_accounts a ON l.account_id = a.id 
         WHERE l.status IN ('pending', 'active')
     ]])
     if result then
         for _, loan in ipairs(result) do
-            if not Loans[loan.account_number] then
-                Loans[loan.account_number] = {}
+            if not Loans[loan.id] then
+                Loans[loan.id] = {}
             end
-            table.insert(Loans[loan.account_number], {
+            table.insert(Loans[loan.id], {
                 id = loan.id,
                 type = loan.type,
                 amount = loan.amount,
@@ -98,25 +102,24 @@ function CreateAccount(citizenId, accountType, pin)
     
     if success and result[1] then
         local account = result[1]
-        Accounts[account.account_number] = {
+        Accounts[account.id] = {
             id = account.id,
             type = account.type,
-            owner = account.owner_identifier,
+            identifier = account.identifier,
             balance = account.balance,
-            pin = account.pin,
-            creditScore = account.credit_score,
-            status = account.status
+            name = account.name,
+            authorized = json.decode(account.authorized or '[]')
         }
-        return true, account.account_number
+        return true, account.id
     end
     return false, "Failed to create account"
 end
 
 -- Transaction Processing
-function ProcessTransaction(accountNumber, transactionType, amount, description)
-    if not Accounts[accountNumber] then return false, "Account not found" end
+function ProcessTransaction(accountId, transactionType, amount, description)
+    if not Accounts[accountId] then return false, "Account not found" end
     
-    local account = Accounts[accountNumber]
+    local account = Accounts[accountId]
     local success, result = MySQL.query.await('CALL process_transaction(?, ?, ?, ?, ?)',
         {account.id, transactionType, amount, description, nil})
     
@@ -125,12 +128,12 @@ function ProcessTransaction(accountNumber, transactionType, amount, description)
         account.balance = result[1].balance_after
         
         -- Update transactions cache
-        if not Transactions[accountNumber] then Transactions[accountNumber] = {} end
-        table.insert(Transactions[accountNumber], 1, result[1])
+        if not Transactions[accountId] then Transactions[accountId] = {} end
+        table.insert(Transactions[accountId], 1, result[1])
         
         -- Trim transaction history
-        while #Transactions[accountNumber] > Config.UI.maxTransactionHistory do
-            table.remove(Transactions[accountNumber])
+        while #Transactions[accountId] > Config.UI.maxTransactionHistory do
+            table.remove(Transactions[accountId])
         end
         
         -- Update credit score based on transaction
@@ -142,19 +145,19 @@ function ProcessTransaction(accountNumber, transactionType, amount, description)
 end
 
 -- Investment Management
-function CreateInvestment(accountNumber, investmentType, amount)
-    if not Accounts[accountNumber] then return false, "Account not found" end
+function CreateInvestment(accountId, investmentType, amount)
+    if not Accounts[accountId] then return false, "Account not found" end
     
-    local account = Accounts[accountNumber]
+    local account = Accounts[accountId]
     local success, result = MySQL.query.await('CALL create_investment(?, ?, ?)',
         {account.id, investmentType, amount})
     
     if success and result[1] then
         -- Update investments cache
-        if not Investments[accountNumber] then
-            Investments[accountNumber] = {}
+        if not Investments[accountId] then
+            Investments[accountId] = {}
         end
-        table.insert(Investments[accountNumber], {
+        table.insert(Investments[accountId], {
             id = result[1].id,
             type = result[1].type,
             amount = result[1].amount,
@@ -167,19 +170,19 @@ function CreateInvestment(accountNumber, investmentType, amount)
 end
 
 -- Loan Management
-function RequestLoan(accountNumber, loanType, amount, termMonths)
-    if not Accounts[accountNumber] then return false, "Account not found" end
+function RequestLoan(accountId, loanType, amount, termMonths)
+    if not Accounts[accountId] then return false, "Account not found" end
     
-    local account = Accounts[accountNumber]
+    local account = Accounts[accountId]
     local success, result = MySQL.query.await('CALL request_loan(?, ?, ?, ?)',
         {account.id, loanType, amount, termMonths})
     
     if success and result[1] then
         -- Update loans cache
-        if not Loans[accountNumber] then
-            Loans[accountNumber] = {}
+        if not Loans[accountId] then
+            Loans[accountId] = {}
         end
-        table.insert(Loans[accountNumber], {
+        table.insert(Loans[accountId], {
             id = result[1].id,
             type = result[1].type,
             amount = result[1].amount,
@@ -231,13 +234,13 @@ RegisterNetEvent('sl-banking:server:getAccounts', function()
     
     if Player then
         local playerAccounts = {}
-        for accountNumber, account in pairs(Accounts) do
-            if account.owner == Player.PlayerData.citizenid then
+        for accountId, account in pairs(Accounts) do
+            if account.identifier == Player.PlayerData.citizenid then
                 table.insert(playerAccounts, {
-                    number = accountNumber,
+                    id = accountId,
                     type = account.type,
                     balance = account.balance,
-                    status = account.status
+                    name = account.name
                 })
             end
         end
@@ -245,12 +248,12 @@ RegisterNetEvent('sl-banking:server:getAccounts', function()
     end
 end)
 
-RegisterNetEvent('sl-banking:server:getTransactions', function(accountNumber)
+RegisterNetEvent('sl-banking:server:getTransactions', function(accountId)
     local src = source
     local Player = SLCore.Functions.GetPlayer(src)
     
-    if Player and Accounts[accountNumber] and Accounts[accountNumber].owner == Player.PlayerData.citizenid then
-        TriggerClientEvent('sl-banking:client:receiveTransactions', src, Transactions[accountNumber] or {})
+    if Player and Accounts[accountId] and Accounts[accountId].identifier == Player.PlayerData.citizenid then
+        TriggerClientEvent('sl-banking:client:receiveTransactions', src, Transactions[accountId] or {})
     end
 end)
 
@@ -258,7 +261,7 @@ RegisterNetEvent('sl-banking:server:processTransaction', function(data)
     local src = source
     local Player = SLCore.Functions.GetPlayer(src)
     
-    if Player and Accounts[data.account] and Accounts[data.account].owner == Player.PlayerData.citizenid then
+    if Player and Accounts[data.account] and Accounts[data.account].identifier == Player.PlayerData.citizenid then
         local success, result = ProcessTransaction(data.account, data.type, data.amount, data.description)
         TriggerClientEvent('sl-banking:client:transactionComplete', src, success, result)
     end
@@ -268,10 +271,10 @@ end)
 CreateThread(function()
     while true do
         -- Update investment values
-        for accountNumber, investments in pairs(Investments) do
+        for accountId, investments in pairs(Investments) do
             for _, investment in ipairs(investments) do
                 local success, result = MySQL.query.await('CALL get_account_investments(?)',
-                    {Accounts[accountNumber].id})
+                    {Accounts[accountId].id})
                 if success and result[1] then
                     investment.currentValue = result[1].current_value
                 end
@@ -279,12 +282,12 @@ CreateThread(function()
         end
         
         -- Process loan payments
-        for accountNumber, loans in pairs(Loans) do
+        for accountId, loans in pairs(Loans) do
             for _, loan in ipairs(loans) do
                 if loan.status == 'active' and os.time() >= loan.nextPayment then
-                    local account = Accounts[accountNumber]
+                    local account = Accounts[accountId]
                     if account and account.balance >= loan.monthlyPayment then
-                        ProcessTransaction(accountNumber, 'loan_payment', loan.monthlyPayment,
+                        ProcessTransaction(accountId, 'loan_payment', loan.monthlyPayment,
                             string.format("Automatic loan payment - ID: %d", loan.id))
                     else
                         -- Update credit score negatively for missed payment

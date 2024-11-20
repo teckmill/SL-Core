@@ -1,0 +1,37 @@
+body {
+    background: transparent;
+    margin: 0;
+    padding: 0;
+    font-family: 'Digital-7', monospace;
+}
+
+#radar-container {
+    position: absolute;
+    top: 50%;
+    right: 20px;
+    transform: translateY(-50%);
+    background: rgba(0, 0, 0, 0.8);
+    border-radius: 10px;
+    padding: 15px;
+    color: #FF0000;
+}
+
+.radar-display {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.front-radar, .rear-radar {
+    text-align: center;
+}
+
+.speed {
+    font-size: 48px;
+    font-weight: bold;
+}
+
+.plate {
+    font-size: 24px;
+    color: #00FF00;
+} 

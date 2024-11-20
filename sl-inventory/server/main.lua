@@ -5,13 +5,23 @@ local DropsIndex = 1
 
 -- Initialize
 CreateThread(function()
-    -- Load all player inventories from database
-    local result = MySQL.query.await('SELECT * FROM player_inventory')
-    if result then
-        for _, data in ipairs(result) do
-            Inventories[data.identifier] = json.decode(data.inventory)
+    MySQL.ready(function()
+        -- Create tables if they don't exist
+        local sqlFile = LoadResourceFile(GetCurrentResourceName(), 'sql/inventory.sql')
+        if sqlFile then
+            MySQL.Sync.execute(sqlFile)
         end
-    end
+
+        -- Load all player inventories from database
+        local result = MySQL.query.await('SELECT identifier, inventory FROM player_inventory')
+        if result then
+            for _, data in ipairs(result) do
+                if data.inventory then
+                    Inventories[data.identifier] = json.decode(data.inventory)
+                end
+            end
+        end
+    end)
 end)
 
 -- Helper Functions
@@ -38,7 +48,7 @@ local function CanCarryItem(inventory, item, amount)
         currentWeight = currentWeight + (SLCore.Shared.Items[v.name].weight * v.amount)
     end
     
-    return (currentWeight + (itemInfo.weight * amount)) <= GetInventoryMaxWeight('player')
+    return (currentWeight + (itemInfo.weight * amount)) <= GetInventoryMaxWeight('player', identifier)
 end
 
 local function GetFirstEmptySlot(inventory)
@@ -63,8 +73,8 @@ RegisterNetEvent('sl-inventory:server:OpenInventory', function(type, data)
     
     local inventory = {
         type = type,
-        slots = GetInventoryMaxSlots(type),
-        maxWeight = GetInventoryMaxWeight(type),
+        slots = GetInventoryMaxSlots(type, Player.PlayerData.identifier),
+        maxWeight = GetInventoryMaxWeight(type, Player.PlayerData.identifier),
         items = {}
     }
     

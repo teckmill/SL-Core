@@ -1,221 +1,148 @@
 local SLCore = exports['sl-core']:GetCoreObject()
-local Jobs = {}
-local JobsData = {}
-local EmployeeData = {}
+local JobData = {}
 
--- Database initialization
+-- Initialize
 CreateThread(function()
-    MySQL.query([[
-        CREATE TABLE IF NOT EXISTS sl_jobs (
-            id INT AUTO_INCREMENT PRIMARY KEY,
-            name VARCHAR(50) NOT NULL,
-            label VARCHAR(50) NOT NULL,
-            category VARCHAR(50) NOT NULL,
-            owner VARCHAR(50),
-            bank INT DEFAULT 0,
-            settings JSON,
-            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-        )
-    ]])
-
-    MySQL.query([[
-        CREATE TABLE IF NOT EXISTS sl_job_employees (
-            id INT AUTO_INCREMENT PRIMARY KEY,
-            job_id INT NOT NULL,
-            citizen_id VARCHAR(50) NOT NULL,
-            grade INT DEFAULT 0,
-            skills JSON,
-            hired_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-            FOREIGN KEY (job_id) REFERENCES sl_jobs(id)
-        )
-    ]])
-
-    LoadJobs()
+    MySQL.ready(function()
+        -- Create tables if they don't exist
+        local sqlFile = LoadResourceFile(GetCurrentResourceName(), 'sql/jobs.sql')
+        -- Split and execute SQL statements individually
+        for statement in sqlFile:gmatch("([^;]+);") do
+            statement = statement:gsub("^%s+", ""):gsub("%s+$", "") -- Trim whitespace
+            if statement ~= "" then
+                MySQL.Sync.execute(statement)
+            end
+        end
+        LoadAllJobData()
+    end)
 end)
 
--- Load all jobs from database
-function LoadJobs()
-    local result = MySQL.query.await('SELECT * FROM sl_jobs')
-    if result then
-        for _, job in ipairs(result) do
-            Jobs[job.name] = {
-                label = job.label,
-                category = job.category,
-                owner = job.owner,
-                bank = job.bank,
-                settings = json.decode(job.settings)
-            }
-            LoadJobEmployees(job.id, job.name)
-        end
-    end
-end
-
--- Load employees for a specific job
-function LoadJobEmployees(jobId, jobName)
-    local result = MySQL.query.await('SELECT * FROM sl_job_employees WHERE job_id = ?', {jobId})
-    if result then
-        EmployeeData[jobName] = {}
-        for _, employee in ipairs(result) do
-            EmployeeData[jobName][employee.citizen_id] = {
-                grade = employee.grade,
-                skills = json.decode(employee.skills),
-                hired_at = employee.hired_at
-            }
-        end
-    end
-end
-
--- Job Management Functions
-function CreateJob(name, data)
-    if Jobs[name] then return false, "Job already exists" end
-    
-    local success = MySQL.insert.await('INSERT INTO sl_jobs (name, label, category, owner, settings) VALUES (?, ?, ?, ?, ?)',
-        {name, data.label, data.category, data.owner, json.encode(data.settings)})
-    
-    if success then
-        Jobs[name] = data
-        return true, "Job created successfully"
-    end
-    return false, "Failed to create job"
-end
-
-function UpdateJob(name, data)
-    if not Jobs[name] then return false, "Job doesn't exist" end
-    
-    local success = MySQL.update.await('UPDATE sl_jobs SET label = ?, category = ?, settings = ? WHERE name = ?',
-        {data.label, data.category, json.encode(data.settings), name})
-    
-    if success then
-        Jobs[name] = data
-        return true, "Job updated successfully"
-    end
-    return false, "Failed to update job"
-end
-
--- Employee Management Functions
-function HireEmployee(jobName, citizenId, grade)
-    if not Jobs[jobName] then return false, "Job doesn't exist" end
-    if EmployeeData[jobName] and EmployeeData[jobName][citizenId] then
-        return false, "Employee already hired"
-    end
-
-    local jobId = MySQL.scalar.await('SELECT id FROM sl_jobs WHERE name = ?', {jobName})
-    local success = MySQL.insert.await('INSERT INTO sl_job_employees (job_id, citizen_id, grade) VALUES (?, ?, ?)',
-        {jobId, citizenId, grade})
-    
-    if success then
-        if not EmployeeData[jobName] then EmployeeData[jobName] = {} end
-        EmployeeData[jobName][citizenId] = {
-            grade = grade,
-            skills = {},
-            hired_at = os.time()
+-- Load Job Data
+function LoadAllJobData()
+    local result = MySQL.Sync.fetchAll('SELECT * FROM job_data')
+    for _, data in ipairs(result) do
+        JobData[data.citizenid] = {
+            job = data.job,
+            grade = data.grade,
+            duty = data.duty == 1,
+            experience = data.experience,
+            skills = json.decode(data.skills or '{}'),
+            lastDuty = data.last_duty,
+            totalHours = data.total_hours
         }
-        return true, "Employee hired successfully"
     end
-    return false, "Failed to hire employee"
 end
 
-function FireEmployee(jobName, citizenId)
-    if not Jobs[jobName] or not EmployeeData[jobName] or not EmployeeData[jobName][citizenId] then
-        return false, "Employee not found"
-    end
-
-    local jobId = MySQL.scalar.await('SELECT id FROM sl_jobs WHERE name = ?', {jobName})
-    local success = MySQL.execute.await('DELETE FROM sl_job_employees WHERE job_id = ? AND citizen_id = ?',
-        {jobId, citizenId})
+-- Job Management
+function SetPlayerJob(source, job, grade)
+    local Player = SLCore.Functions.GetPlayer(source)
+    if not Player then return false end
     
-    if success then
-        EmployeeData[jobName][citizenId] = nil
-        return true, "Employee fired successfully"
-    end
-    return false, "Failed to fire employee"
-end
-
--- Skill System Functions
-function UpdateEmployeeSkills(jobName, citizenId, skills)
-    if not EmployeeData[jobName] or not EmployeeData[jobName][citizenId] then
-        return false, "Employee not found"
-    end
-
-    local jobId = MySQL.scalar.await('SELECT id FROM sl_jobs WHERE name = ?', {jobName})
-    local success = MySQL.update.await('UPDATE sl_job_employees SET skills = ? WHERE job_id = ? AND citizen_id = ?',
-        {json.encode(skills), jobId, citizenId})
+    local citizenid = Player.PlayerData.citizenid
+    local jobConfig = Config.Jobs[job]
     
-    if success then
-        EmployeeData[jobName][citizenId].skills = skills
-        return true, "Skills updated successfully"
-    end
-    return false, "Failed to update skills"
+    if not jobConfig then return false end
+    if not jobConfig.grades[tostring(grade)] then grade = 0 end
+    
+    -- Update database
+    MySQL.Async.execute('INSERT INTO job_data (citizenid, job, grade) VALUES (?, ?, ?) ON DUPLICATE KEY UPDATE job = VALUES(job), grade = VALUES(grade)',
+        {citizenid, job, grade})
+    
+    -- Update cache
+    JobData[citizenid] = JobData[citizenid] or {}
+    JobData[citizenid].job = job
+    JobData[citizenid].grade = grade
+    JobData[citizenid].duty = jobConfig.defaultDuty or false
+    
+    -- Update player data
+    Player.Functions.SetJob(job, grade)
+    
+    -- Log change
+    LogJobAction(citizenid, job, 'job_change', json.encode({
+        old_job = Player.PlayerData.job.name,
+        new_job = job,
+        new_grade = grade
+    }))
+    
+    return true
 end
 
--- Paycheck System
-CreateThread(function()
-    while true do
-        ProcessPaychecks()
-        Wait(Config.PaycheckInterval * 60 * 1000)
-    end
+-- Duty Management
+RegisterNetEvent('sl-jobs:server:ToggleDuty', function()
+    local src = source
+    local Player = SLCore.Functions.GetPlayer(src)
+    if not Player then return end
+    
+    local citizenid = Player.PlayerData.citizenid
+    local jobData = JobData[citizenid]
+    if not jobData then return end
+    
+    local newDutyStatus = not jobData.duty
+    
+    -- Update database
+    MySQL.Async.execute('UPDATE job_data SET duty = ?, last_duty = CURRENT_TIMESTAMP WHERE citizenid = ?',
+        {newDutyStatus and 1 or 0, citizenid})
+    
+    -- Update cache
+    jobData.duty = newDutyStatus
+    jobData.lastDuty = os.time()
+    
+    -- Update player
+    Player.Functions.SetJobDuty(newDutyStatus)
+    TriggerClientEvent('SLCore:Client:SetDuty', src, newDutyStatus)
+    
+    -- Log action
+    LogJobAction(citizenid, jobData.job, 'duty_toggle', json.encode({
+        status = newDutyStatus
+    }))
 end)
 
-function ProcessPaychecks()
-    for jobName, employees in pairs(EmployeeData) do
-        for citizenId, data in pairs(employees) do
-            local player = SLCore.Functions.GetPlayerByCitizenId(citizenId)
-            if player then
-                local grade = Config.Jobs[jobName].grades[data.grade]
-                if grade then
-                    local payment = grade.payment
-                    -- Apply skill bonuses
-                    if data.skills then
-                        for skill, level in pairs(data.skills) do
-                            payment = payment * (1 + (level / Config.MaxSkillLevel * 0.5))
-                        end
-                    end
-                    player.Functions.AddMoney('bank', payment, 'job-payment')
-                    TriggerClientEvent('sl-jobs:client:PaycheckReceived', player.PlayerData.source, payment)
-                end
-            end
+-- Skill Management
+function UpdateSkill(citizenid, skill, xp)
+    if not Config.Skills[skill] then return false end
+    
+    local currentSkill = MySQL.Sync.fetchAll('SELECT * FROM job_skills WHERE citizenid = ? AND skill = ?',
+        {citizenid, skill})[1]
+    
+    if currentSkill then
+        local newXP = currentSkill.xp + xp
+        local newLevel = math.floor(newXP / Config.Skills[skill].xpPerLevel)
+        
+        if newLevel > Config.Skills[skill].maxLevel then
+            newLevel = Config.Skills[skill].maxLevel
+            newXP = newLevel * Config.Skills[skill].xpPerLevel
         end
+        
+        MySQL.Async.execute('UPDATE job_skills SET level = ?, xp = ? WHERE citizenid = ? AND skill = ?',
+            {newLevel, newXP, citizenid, skill})
+            
+        return true
+    else
+        MySQL.Async.execute('INSERT INTO job_skills (citizenid, skill, level, xp) VALUES (?, ?, ?, ?)',
+            {citizenid, skill, 0, xp})
+            
+        return true
     end
 end
 
--- Events and Callbacks
-RegisterNetEvent('sl-jobs:server:RequestJobData', function()
-    local src = source
-    local player = SLCore.Functions.GetPlayer(src)
-    if player then
-        local citizenId = player.PlayerData.citizenid
-        local playerJobs = {}
-        for jobName, employees in pairs(EmployeeData) do
-            if employees[citizenId] then
-                playerJobs[jobName] = {
-                    grade = employees[citizenId].grade,
-                    skills = employees[citizenId].skills
-                }
-            end
-        end
-        TriggerClientEvent('sl-jobs:client:ReceiveJobData', src, playerJobs)
-    end
-end)
+-- Logging
+function LogJobAction(citizenid, job, action, details)
+    MySQL.Async.execute('INSERT INTO job_logs (citizenid, job, action, details) VALUES (?, ?, ?, ?)',
+        {citizenid, job, action, details})
+end
 
-RegisterNetEvent('sl-jobs:server:RequestJobMarket', function()
-    local src = source
-    TriggerClientEvent('sl-jobs:client:ReceiveJobMarket', src, Jobs)
+-- Callbacks
+SLCore.Functions.CreateCallback('sl-jobs:server:GetJobData', function(source, cb)
+    local Player = SLCore.Functions.GetPlayer(source)
+    if not Player then return cb({}) end
+    
+    local citizenid = Player.PlayerData.citizenid
+    cb(JobData[citizenid] or {})
 end)
 
 -- Exports
-exports('GetJobData', function(jobName)
-    return Jobs[jobName]
+exports('SetPlayerJob', SetPlayerJob)
+exports('UpdateSkill', UpdateSkill)
+exports('GetJobData', function(citizenid)
+    return JobData[citizenid]
 end)
-
-exports('GetEmployeeData', function(jobName, citizenId)
-    if EmployeeData[jobName] then
-        return EmployeeData[jobName][citizenId]
-    end
-    return nil
-end)
-
-exports('CreateJob', CreateJob)
-exports('UpdateJob', UpdateJob)
-exports('HireEmployee', HireEmployee)
-exports('FireEmployee', FireEmployee)
-exports('UpdateEmployeeSkills', UpdateEmployeeSkills)

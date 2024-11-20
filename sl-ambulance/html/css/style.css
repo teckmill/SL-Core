@@ -1,0 +1,100 @@
+:root {
+    --primary-color: #e74c3c;
+    --secondary-color: #c0392b;
+    --dark-bg: #1E1E1E;
+    --light-text: #FFFFFF;
+    --border-radius: 8px;
+}
+
+body {
+    background: transparent;
+    font-family: 'Segoe UI', sans-serif;
+    height: 100vh;
+    margin: 0;
+    overflow: hidden;
+}
+
+#ems-container {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 80vw;
+    height: 80vh;
+    background: var(--dark-bg);
+    border-radius: var(--border-radius);
+    color: var(--light-text);
+    display: none;
+    padding: 20px;
+}
+
+.patient-info {
+    background: rgba(0, 0, 0, 0.3);
+    padding: 20px;
+    border-radius: var(--border-radius);
+    margin-bottom: 20px;
+}
+
+.vitals {
+    display: flex;
+    justify-content: space-around;
+    margin-top: 20px;
+}
+
+.vital-item {
+    text-align: center;
+}
+
+.vital-item i {
+    font-size: 24px;
+    color: var(--primary-color);
+    margin-bottom: 10px;
+}
+
+.wounds-list {
+    background: rgba(0, 0, 0, 0.3);
+    padding: 20px;
+    border-radius: var(--border-radius);
+    margin-bottom: 20px;
+    max-height: 300px;
+    overflow-y: auto;
+}
+
+.wound-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.treatment-options {
+    background: rgba(0, 0, 0, 0.3);
+    padding: 20px;
+    border-radius: var(--border-radius);
+}
+
+.treatment-buttons {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+    margin-top: 15px;
+}
+
+.treatment-btn {
+    background: var(--primary-color);
+    border: none;
+    color: var(--light-text);
+    padding: 15px;
+    border-radius: var(--border-radius);
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+.treatment-btn:hover {
+    background: var(--secondary-color);
+}
+
+.treatment-btn i {
+    margin-right: 10px;
+} 

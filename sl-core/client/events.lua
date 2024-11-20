@@ -2,69 +2,65 @@ local SLCore = exports['sl-core']:GetCoreObject()
 
 -- Player Events
 RegisterNetEvent('SLCore:Client:OnPlayerLoaded', function()
-    ShutdownLoadingScreenNui()
+    ShutdownLoadingScreen()
     LocalPlayer.state:set('isLoggedIn', true, false)
-    if not SLCore.Functions.GetPlayerData().metadata["hunger"] then
-        SLCore.Functions.Notify('Hunger and thirst values reset', 'error')
-        TriggerServerEvent('SLCore:Server:SetMetaData', 'hunger', 100)
-        TriggerServerEvent('SLCore:Server:SetMetaData', 'thirst', 100)
-    end
+    
+    -- Initialize player state
+    SetCanAttackFriendly(PlayerPedId(), true, false)
+    NetworkSetFriendlyFireOption(true)
+    
+    -- Load saved data
+    TriggerServerEvent('SLCore:Server:OnPlayerLoaded')
 end)
 
 RegisterNetEvent('SLCore:Client:OnPlayerUnload', function()
     LocalPlayer.state:set('isLoggedIn', false, false)
 end)
 
-RegisterNetEvent('SLCore:Client:UpdateObject', function()
-    SLCore = exports['sl-core']:GetCoreObject()
+-- Money Events
+RegisterNetEvent('SLCore:Client:OnMoneyChange', function(type, amount, action)
+    if not SLCore.PlayerData then return end
+    SLCore.PlayerData.money[type] = amount
+    
+    if Config.Debug then
+        print(string.format('[Money] %s %s: $%s', action, type, amount))
+    end
+    
+    TriggerEvent('sl-hud:client:OnMoneyChange', type, amount, action)
 end)
 
--- Utility Events
-RegisterNetEvent('SLCore:Client:Notify', function(text, type, time)
-    SLCore.Functions.Notify(text, type, time)
-end)
-
-RegisterNetEvent('SLCore:Client:DrawText', function(text, position)
-    exports['sl-core']:DrawText(text, position)
-end)
-
-RegisterNetEvent('SLCore:Client:TriggerCallback', function(name, ...)
-    SLCore.Functions.TriggerCallback(name, ...)
-end)
-
--- State Events
-RegisterNetEvent('SLCore:Client:SetPlayerData', function(val)
-    SLCore.PlayerData = val
-end)
-
+-- Job Events
 RegisterNetEvent('SLCore:Client:OnJobUpdate', function(JobInfo)
-    SLCore.Functions.Notify("Job Updated: "..JobInfo.label)
     SLCore.PlayerData.job = JobInfo
+    TriggerEvent('sl-hud:client:OnJobUpdate')
 end)
 
+-- Gang Events
 RegisterNetEvent('SLCore:Client:OnGangUpdate', function(GangInfo)
     SLCore.PlayerData.gang = GangInfo
-end)
-
-RegisterNetEvent('SLCore:Client:OnMoneyChange', function(type, amount, operation)
-    SLCore.PlayerData.money[type] = amount
-    SLCore.Functions.Notify('Money '..operation..': $'..amount..' ('..type..')', 'success')
+    TriggerEvent('sl-hud:client:OnGangUpdate')
 end)
 
 -- Permission Events
-RegisterNetEvent('SLCore:Client:OnPermissionUpdate', function(permission)
-    SLCore.PlayerData.permission = permission
+RegisterNetEvent('SLCore:Client:OnPermissionUpdate', function(Permission)
+    SLCore.PlayerData.permission = Permission
 end)
 
--- Item Events
-RegisterNetEvent('SLCore:Client:OnItemAdd', function(itemName, amount, slot)
-    SLCore.Functions.Notify(amount..'x '..SLCore.Shared.Items[itemName].label..' added', 'success')
+-- Callback Events
+RegisterNetEvent('SLCore:Client:TriggerCallback', function(name, ...)
+    if SLCore.ServerCallbacks[name] then
+        SLCore.ServerCallbacks[name](...)
+        SLCore.ServerCallbacks[name] = nil
+    end
 end)
 
-RegisterNetEvent('SLCore:Client:OnItemRemove', function(itemName, amount)
-    SLCore.Functions.Notify(amount..'x '..SLCore.Shared.Items[itemName].label..' removed', 'error')
+-- Death Events
+RegisterNetEvent('SLCore:Client:OnPlayerDeath', function()
+    SLCore.PlayerData.metadata['dead'] = true
+    TriggerEvent('sl-hud:client:OnPlayerDeath')
 end)
 
-RegisterNetEvent('SLCore:Client:OnItemUse', function(item)
-    SLCore.Functions.Notify('Used '..item.label, 'success')
+RegisterNetEvent('SLCore:Client:OnPlayerRevive', function()
+    SLCore.PlayerData.metadata['dead'] = false
+    TriggerEvent('sl-hud:client:OnPlayerRevive')
 end)

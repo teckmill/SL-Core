@@ -15,7 +15,7 @@ function SLCore.Player.Login(source, citizenid, newData)
                 PlayerData.metadata = json.decode(PlayerData.metadata)
                 PlayerData.charinfo = json.decode(PlayerData.charinfo)
                 
-                local Player = SLCore.Player.CreatePlayer(PlayerData, license)
+                local Player = SLCore.Player.CreatePlayer(PlayerData, source)
                 SLCore.Players[source] = Player
                 
                 -- Set player routing bucket
@@ -32,152 +32,80 @@ function SLCore.Player.Login(source, citizenid, newData)
     end
 end
 
-function SLCore.Player.CreatePlayer(PlayerData, license)
+function SLCore.Player.CreatePlayer(PlayerData, source)
     local self = {}
     self.Functions = {}
     self.PlayerData = PlayerData
-    self.PlayerData.license = license
-    
-    function self.Functions.UpdatePlayerData()
-        TriggerClientEvent('sl-core:client:playerDataUpdate', self.PlayerData.source, self.PlayerData)
+
+    self.Functions.UpdatePlayerData = function()
+        TriggerClientEvent('SLCore:Player:SetPlayerData', self.PlayerData.source, self.PlayerData)
+        TriggerEvent('SLCore:Player:SetPlayerData', self.PlayerData.source, self.PlayerData)
     end
-    
-    function self.Functions.SetJob(job, grade)
-        local oldJob = self.PlayerData.job
-        job = job:lower()
-        grade = tostring(grade) or '0'
-        
-        if SLShared.Jobs[job] then
-            self.PlayerData.job = {
-                name = job,
-                label = SLShared.Jobs[job].label,
-                payment = SLShared.Jobs[job].grades[grade].payment or 30,
-                grade = {
-                    name = SLShared.Jobs[job].grades[grade].name,
-                    level = tonumber(grade)
-                },
-                onduty = SLShared.Jobs[job].defaultDuty
-            }
-            
-            TriggerClientEvent('sl-core:client:jobUpdate', self.PlayerData.source, self.PlayerData.job)
-            TriggerEvent('sl-core:server:jobUpdate', self.PlayerData.source, self.PlayerData.job, oldJob)
-            return true
-        end
-        return false
+
+    self.Functions.SetJob = function(job, grade)
+        local job = job:lower()
+        local grade = tostring(grade) or '0'
+
+        self.PlayerData.job.name = job
+        self.PlayerData.job.grade = grade
+        self.PlayerData.job.onduty = Config.Jobs[job].defaultDuty
+
+        self.Functions.UpdatePlayerData()
+        TriggerClientEvent('SLCore:Client:OnJobUpdate', self.PlayerData.source, self.PlayerData.job)
     end
-    
-    function self.Functions.SetGang(gang, grade)
-        local oldGang = self.PlayerData.gang
-        gang = gang:lower()
-        grade = tostring(grade) or '0'
-        
-        if SLShared.Gangs[gang] then
-            self.PlayerData.gang = {
-                name = gang,
-                label = SLShared.Gangs[gang].label,
-                grade = {
-                    name = SLShared.Gangs[gang].grades[grade].name,
-                    level = tonumber(grade)
-                }
-            }
-            
-            TriggerClientEvent('sl-core:client:gangUpdate', self.PlayerData.source, self.PlayerData.gang)
-            TriggerEvent('sl-core:server:gangUpdate', self.PlayerData.source, self.PlayerData.gang, oldGang)
-            return true
-        end
-        return false
+
+    self.Functions.SetGang = function(gang, grade)
+        local gang = gang:lower()
+        local grade = tostring(grade) or '0'
+
+        self.PlayerData.gang.name = gang
+        self.PlayerData.gang.grade = grade
+
+        self.Functions.UpdatePlayerData()
+        TriggerClientEvent('SLCore:Client:OnGangUpdate', self.PlayerData.source, self.PlayerData.gang)
     end
-    
-    function self.Functions.SetPlayerData(key, val)
-        if key and val then
-            self.PlayerData[key] = val
-            self.Functions.UpdatePlayerData()
-        end
-    end
-    
-    function self.Functions.AddMoney(moneytype, amount, reason)
+
+    self.Functions.AddMoney = function(moneytype, amount, reason)
         reason = reason or 'unknown'
         local moneytype = moneytype:lower()
         local amount = tonumber(amount)
+
         if amount < 0 then return end
-        
-        if self.PlayerData.money[moneytype] then
-            self.PlayerData.money[moneytype] = self.PlayerData.money[moneytype] + amount
-            self.Functions.UpdatePlayerData()
-            TriggerClientEvent('sl-core:client:moneyChange', self.PlayerData.source, moneytype, amount, "add", reason)
-            return true
-        end
-        return false
+
+        self.PlayerData.money[moneytype] = self.PlayerData.money[moneytype] + amount
+
+        self.Functions.UpdatePlayerData()
+        TriggerEvent('SLCore:Server:OnMoneyChange', self.PlayerData.source, moneytype, amount, "add", reason)
+        TriggerClientEvent('SLCore:Client:OnMoneyChange', self.PlayerData.source, moneytype, amount, "add", reason)
+
+        return true
     end
-    
-    function self.Functions.RemoveMoney(moneytype, amount, reason)
+
+    self.Functions.RemoveMoney = function(moneytype, amount, reason)
         reason = reason or 'unknown'
         local moneytype = moneytype:lower()
         local amount = tonumber(amount)
+
         if amount < 0 then return end
-        
-        if self.PlayerData.money[moneytype] then
-            for _, mtype in pairs(moneytype) do
-                if self.PlayerData.money[mtype] >= amount then
-                    self.PlayerData.money[mtype] = self.PlayerData.money[mtype] - amount
-                    self.Functions.UpdatePlayerData()
-                    TriggerClientEvent('sl-core:client:moneyChange', self.PlayerData.source, mtype, amount, "remove", reason)
-                    return true
-                end
-            end
+
+        if self.PlayerData.money[moneytype] - amount < 0 then
+            return false
         end
-        return false
+
+        self.PlayerData.money[moneytype] = self.PlayerData.money[moneytype] - amount
+
+        self.Functions.UpdatePlayerData()
+        TriggerEvent('SLCore:Server:OnMoneyChange', self.PlayerData.source, moneytype, amount, "remove", reason)
+        TriggerClientEvent('SLCore:Client:OnMoneyChange', self.PlayerData.source, moneytype, amount, "remove", reason)
+
+        return true
     end
-    
-    function self.Functions.SetMoney(moneytype, amount, reason)
-        reason = reason or 'unknown'
-        local moneytype = moneytype:lower()
-        local amount = tonumber(amount)
-        if amount < 0 then return end
-        
-        if self.PlayerData.money[moneytype] then
-            self.PlayerData.money[moneytype] = amount
-            self.Functions.UpdatePlayerData()
-            TriggerClientEvent('sl-core:client:moneyChange', self.PlayerData.source, moneytype, amount, "set", reason)
-            return true
-        end
-        return false
+
+    self.Functions.Save = function()
+        MySQL.Async.execute('UPDATE players SET money = ?, job = ?, position = ?, metadata = ? WHERE citizenid = ?',
+            {json.encode(self.PlayerData.money), json.encode(self.PlayerData.job), json.encode(self.PlayerData.position), json.encode(self.PlayerData.metadata), self.PlayerData.citizenid})
     end
-    
-    function self.Functions.GetMoney(moneytype)
-        if moneytype then
-            moneytype = moneytype:lower()
-            return self.PlayerData.money[moneytype]
-        end
-        return false
-    end
-    
-    function self.Functions.SetMetaData(meta, val)
-        if meta and val then
-            self.PlayerData.metadata[meta] = val
-            self.Functions.UpdatePlayerData()
-        end
-    end
-    
-    function self.Functions.GetMetaData(meta)
-        if meta then
-            return self.PlayerData.metadata[meta]
-        end
-        return self.PlayerData.metadata
-    end
-    
-    function self.Functions.Save()
-        MySQL.update('UPDATE players SET money = ?, job = ?, position = ?, metadata = ?, charinfo = ?, gang = ? WHERE citizenid = ?', {
-            json.encode(self.PlayerData.money),
-            json.encode(self.PlayerData.job),
-            json.encode(self.PlayerData.position),
-            json.encode(self.PlayerData.metadata),
-            json.encode(self.PlayerData.charinfo),
-            json.encode(self.PlayerData.gang),
-            self.PlayerData.citizenid
-        })
-    end
-    
+
     return self
 end
 

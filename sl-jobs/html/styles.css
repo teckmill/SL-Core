@@ -1,0 +1,148 @@
+/* Base Styles */
+:root {
+    --primary-color: #2196F3;
+    --secondary-color: #1976D2;
+    --success-color: #4CAF50;
+    --danger-color: #F44336;
+    --warning-color: #FFC107;
+    --dark-bg: #1E1E1E;
+    --light-text: #FFFFFF;
+    --border-radius: 8px;
+}
+
+body {
+    background: transparent;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    height: 100vh;
+    margin: 0;
+    overflow: hidden;
+}
+
+/* Container */
+#management-container {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 80vw;
+    height: 80vh;
+    background: var(--dark-bg);
+    border-radius: var(--border-radius);
+    color: var(--light-text);
+    overflow: hidden;
+}
+
+/* Sidebar */
+.sidebar {
+    background: rgba(0, 0, 0, 0.3);
+    height: 100%;
+    padding: 0;
+}
+
+.logo-container {
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.nav-link {
+    color: var(--light-text);
+    padding: 15px 20px;
+    border: none;
+    background: none;
+    width: 100%;
+    text-align: left;
+    transition: 0.3s;
+}
+
+.nav-link:hover, .nav-link.active {
+    background: var(--primary-color);
+}
+
+.nav-link i {
+    margin-right: 10px;
+    width: 20px;
+    text-align: center;
+}
+
+/* Main Content */
+.main-content {
+    padding: 20px;
+    height: 100%;
+    overflow-y: auto;
+}
+
+.tab-content {
+    display: none;
+    height: 100%;
+}
+
+.tab-content.active {
+    display: block;
+}
+
+/* Header Styles */
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+/* Table Styles */
+.table {
+    color: var(--light-text);
+}
+
+.table thead th {
+    border-color: rgba(255, 255, 255, 0.1);
+}
+
+.table tbody td {
+    border-color: rgba(255, 255, 255, 0.1);
+}
+
+/* Card Styles */
+.balance-card {
+    background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+    padding: 20px;
+    border-radius: var(--border-radius);
+    margin-bottom: 20px;
+}
+
+/* Button Styles */
+.btn {
+    border-radius: var(--border-radius);
+    padding: 8px 16px;
+}
+
+.actions {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 20px;
+}
+
+/* Transactions */
+.transactions {
+    background: rgba(0, 0, 0, 0.2);
+    padding: 20px;
+    border-radius: var(--border-radius);
+}
+
+/* Applications */
+.application-card {
+    background: rgba(0, 0, 0, 0.2);
+    padding: 15px;
+    border-radius: var(--border-radius);
+    margin-bottom: 10px;
+}
+
+/* Animations */
+.fade-in {
+    animation: fadeIn 0.3s ease-in-out;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+} 

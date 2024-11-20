@@ -105,3 +105,50 @@ SLCore.Functions.CreateCallback('SLCore:Server:HasItem', function(source, cb, it
         cb(nil)
     end
 end)
+
+AddEventHandler('playerDropped', function(reason)
+    local src = source
+    if not SLCore.Players[src] then return end
+    
+    local Player = SLCore.Functions.GetPlayer(src)
+    TriggerEvent('sl-core:server:playerDisconnected', src, Player)
+    Player.Functions.Save()
+    SLCore.Players[src] = nil
+end)
+
+RegisterNetEvent('sl-core:server:updateCoords', function(coords)
+    local src = source
+    local Player = SLCore.Functions.GetPlayer(src)
+    if not Player then return end
+    
+    Player.PlayerData.position = coords
+end)
+
+-- Money Events
+RegisterNetEvent('sl-core:server:addMoney', function(account, amount, reason)
+    local src = source
+    local Player = SLCore.Functions.GetPlayer(src)
+    if not Player then return end
+    
+    Player.Functions.AddMoney(account, amount, reason)
+end)
+
+RegisterNetEvent('sl-core:server:removeMoney', function(account, amount, reason)
+    local src = source
+    local Player = SLCore.Functions.GetPlayer(src)
+    if not Player then return end
+    
+    Player.Functions.RemoveMoney(account, amount, reason)
+end)
+
+-- Job Events
+RegisterNetEvent('sl-core:server:setJob', function(target, job, grade)
+    local src = source
+    local Player = SLCore.Functions.GetPlayer(src)
+    if not Player or not Player.PlayerData.admin then return end
+    
+    local Target = SLCore.Functions.GetPlayer(target)
+    if not Target then return end
+    
+    Target.Functions.SetJob(job, grade)
+end)

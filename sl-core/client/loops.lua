@@ -46,3 +46,70 @@ CreateThread(function()
         end
     end
 end)
+
+-- Health Loop
+CreateThread(function()
+    while true do
+        if LocalPlayer.state.isLoggedIn then
+            local ped = PlayerPedId()
+            if SLCore.PlayerData.metadata['dead'] then
+                DisableAllControlActions(0)
+                EnableControlAction(0, 1, true) -- Camera
+                EnableControlAction(0, 2, true) -- Camera
+                EnableControlAction(0, 245, true) -- Chat
+            end
+            
+            -- Update health in metadata
+            local health = GetEntityHealth(ped)
+            if health ~= SLCore.PlayerData.metadata['health'] then
+                TriggerServerEvent('SLCore:Server:SetMetaData', 'health', health)
+            end
+        end
+        Wait(1000)
+    end
+end)
+
+-- Position Sync Loop
+CreateThread(function()
+    while true do
+        if LocalPlayer.state.isLoggedIn then
+            local ped = PlayerPedId()
+            local pos = GetEntityCoords(ped)
+            if SLCore.PlayerData.metadata['lastposition'] ~= pos then
+                TriggerServerEvent('SLCore:Server:SetMetaData', 'lastposition', pos)
+            end
+        end
+        Wait(5000)
+    end
+end)
+
+-- Stress Loop
+CreateThread(function()
+    while true do
+        if LocalPlayer.state.isLoggedIn then
+            local ped = PlayerPedId()
+            -- Add stress based on actions
+            if IsPedShooting(ped) then
+                TriggerServerEvent('SLCore:Server:AddStress', 1)
+            end
+            if IsPedInMeleeCombat(ped) then
+                TriggerServerEvent('SLCore:Server:AddStress', 2)
+            end
+        end
+        Wait(3000)
+    end
+end)
+
+-- Weapon Loop
+CreateThread(function()
+    while true do
+        if LocalPlayer.state.isLoggedIn then
+            local ped = PlayerPedId()
+            local weapon = GetSelectedPedWeapon(ped)
+            if weapon ~= SLCore.PlayerData.metadata['currentweapon'] then
+                TriggerServerEvent('SLCore:Server:SetMetaData', 'currentweapon', weapon)
+            end
+        end
+        Wait(1000)
+    end
+end)
