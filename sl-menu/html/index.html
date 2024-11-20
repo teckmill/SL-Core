@@ -9,7 +9,7 @@
 </head>
 <body>
     <div id="menu-container" class="hidden">
-        <div class="menu">
+        <div class="menu" data-theme="default">
             <div class="menu-header">
                 <h2 id="menu-title"></h2>
                 <button id="close-menu" class="close-button">
@@ -17,7 +17,18 @@
                 </button>
             </div>
             <div class="menu-description" id="menu-description"></div>
-            <div class="menu-items" id="menu-items"></div>
+            <div class="menu-content">
+                <div id="menu-items" class="menu-items list-view"></div>
+                <div id="menu-grid" class="menu-items grid-view hidden"></div>
+                <div id="menu-context" class="menu-items context-view hidden"></div>
+            </div>
+            <div class="menu-footer">
+                <div class="menu-navigation">
+                    <span class="nav-hint">← → Navigate</span>
+                    <span class="nav-hint">Enter Select</span>
+                    <span class="nav-hint">Esc Close</span>
+                </div>
+            </div>
         </div>
     </div>
     <script src="script.js"></script>
