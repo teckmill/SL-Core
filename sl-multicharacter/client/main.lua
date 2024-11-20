@@ -1,125 +1,156 @@
 local SLCore = exports['sl-core']:GetCoreObject()
 local cam = nil
 local charPed = nil
-local loadingScreen = true
+local loadingCharacter = false
 
--- Initialization
-local function loadCharacters()
-    SLCore.Functions.TriggerCallback('sl-multicharacter:server:GetCharacters', function(result)
-        SendNUIMessage({
-            action = "setupCharacters",
-            characters = result
-        })
-    end)
-end
+-- Cam coords and locations
+local camCoords = vector4(-3962.39, 2013.95, 501.10, 250.85)
+local pedCoords = vector4(-3960.62, 2012.64, 500.91, 67.76)
 
--- Camera Controls
-local function createCamera()
-    local coords = Config.Interior
-    DoScreenFadeOut(10)
-    Wait(1000)
-    cam = CreateCamWithParams("DEFAULT_SCRIPTED_CAMERA", coords.x, coords.y, coords.z + 1.0, 0.0, 0.0, 0.0, 60.00, false, 0)
+-- Function to create character preview camera
+local function createCharacterCam()
+    DoScreenFadeOut(0)
+    cam = CreateCamWithParams("DEFAULT_SCRIPTED_CAMERA", camCoords.x, camCoords.y, camCoords.z, 0.0, 0.0, camCoords.w, 60.00, false, 0)
     SetCamActive(cam, true)
     RenderScriptCams(true, false, 1, true, true)
     DoScreenFadeIn(1000)
-    FreezeEntityPosition(PlayerPedId(), true)
 end
 
-local function deleteCharacterPed()
-    if charPed then
-        DeleteEntity(charPed)
-        charPed = nil
+-- Function to delete character preview camera
+local function deleteCharacterCam()
+    if cam ~= nil then
+        SetCamActive(cam, false)
+        DestroyCam(cam, true)
+        RenderScriptCams(false, false, 1, true, true)
+        cam = nil
     end
 end
 
-local function loadCharacterPed(data)
-    deleteCharacterPed()
+-- Function to create character preview ped
+local function createCharacterPed()
+    if charPed ~= nil then
+        DeleteEntity(charPed)
+    end
     
-    local model = data.gender == "Male" and `mp_m_freemode_01` or `mp_f_freemode_01`
+    local model = `mp_m_freemode_01`
     RequestModel(model)
     while not HasModelLoaded(model) do
         Wait(0)
     end
     
-    charPed = CreatePed(2, model, Config.Interior.x, Config.Interior.y, Config.Interior.z - 0.98, 0.0, false, true)
+    charPed = CreatePed(2, model, pedCoords.x, pedCoords.y, pedCoords.z - 0.98, pedCoords.w, false, true)
     SetPedComponentVariation(charPed, 0, 0, 0, 2)
     FreezeEntityPosition(charPed, true)
     SetEntityInvincible(charPed, true)
     PlaceObjectOnGroundProperly(charPed)
     SetBlockingOfNonTemporaryEvents(charPed, true)
     
-    -- Load character customization here
-    -- This would typically involve setting clothes, hair, and other appearance options
+    SetModelAsNoLongerNeeded(model)
 end
+
+-- Function to delete character preview ped
+local function deleteCharacterPed()
+    if charPed ~= nil then
+        DeleteEntity(charPed)
+        charPed = nil
+    end
+end
+
+-- Function to open multicharacter menu
+local function openCharMenu(characters)
+    SetNuiFocus(true, true)
+    SendNUIMessage({
+        action = "openUI",
+        characters = characters
+    })
+    createCharacterCam()
+    createCharacterPed()
+end
+
+-- Function to close multicharacter menu
+local function closeCharMenu()
+    SetNuiFocus(false, false)
+    SendNUIMessage({
+        action = "closeUI"
+    })
+    deleteCharacterCam()
+    deleteCharacterPed()
+end
+
+-- Event handler for showing multicharacter menu
+RegisterNetEvent('sl-multicharacter:client:showUI')
+AddEventHandler('sl-multicharacter:client:showUI', function(characters)
+    if loadingCharacter then return end
+    
+    -- Set default spawn location
+    SetEntityCoords(PlayerPedId(), camCoords.x, camCoords.y, camCoords.z, false, false, false, false)
+    SetEntityVisible(PlayerPedId(), false, false)
+    FreezeEntityPosition(PlayerPedId(), true)
+    
+    -- Open menu with characters
+    openCharMenu(characters)
+end)
+
+-- Event handler for character selection
+RegisterNetEvent('sl-multicharacter:client:selectCharacter')
+AddEventHandler('sl-multicharacter:client:selectCharacter', function(character)
+    loadingCharacter = true
+    closeCharMenu()
+    DoScreenFadeOut(500)
+    Wait(1000)
+    
+    -- Reset player state
+    SetEntityVisible(PlayerPedId(), true, false)
+    FreezeEntityPosition(PlayerPedId(), false)
+    
+    -- Trigger character load
+    TriggerServerEvent('sl-multicharacter:server:loadCharacter', character)
+    loadingCharacter = false
+end)
 
 -- NUI Callbacks
 RegisterNUICallback('selectCharacter', function(data, cb)
-    local cData = data.cData
-    DoScreenFadeOut(10)
-    TriggerServerEvent('sl-multicharacter:server:loadUserData', cData)
-    cb("ok")
+    if loadingCharacter then return end
+    TriggerEvent('sl-multicharacter:client:selectCharacter', data.character)
+    cb('ok')
 end)
 
 RegisterNUICallback('createCharacter', function(data, cb)
-    local cData = data
-    DoScreenFadeOut(10)
-    TriggerServerEvent('sl-multicharacter:server:createCharacter', cData)
-    cb("ok")
+    if loadingCharacter then return end
+    closeCharMenu()
+    TriggerServerEvent('sl-multicharacter:server:createCharacter', data)
+    cb('ok')
 end)
 
 RegisterNUICallback('deleteCharacter', function(data, cb)
+    if loadingCharacter then return end
     TriggerServerEvent('sl-multicharacter:server:deleteCharacter', data.citizenid)
-    cb("ok")
+    cb('ok')
 end)
 
 RegisterNUICallback('closeUI', function(_, cb)
-    SetNuiFocus(false, false)
-    cb("ok")
+    if loadingCharacter then return end
+    closeCharMenu()
+    cb('ok')
 end)
 
--- Events
-RegisterNetEvent('sl-multicharacter:client:chooseChar', function()
-    SetNuiFocus(true, true)
-    DoScreenFadeOut(10)
-    Wait(1000)
-    
-    loadingScreen = false
-    createCamera()
-    loadCharacters()
-    
-    SendNUIMessage({
-        action = "openUI",
-        maxCharacters = Config.DefaultNumberOfCharacters
-    })
+-- Initialize on resource start
+AddEventHandler('onResourceStart', function(resourceName)
+    if GetCurrentResourceName() ~= resourceName then return end
+    Wait(100)
+    TriggerServerEvent('sl-multicharacter:server:setupCharacters')
 end)
 
-RegisterNetEvent('sl-multicharacter:client:spawnPlayer', function(data)
-    local spawn = Config.DefaultSpawn
-    if Config.Spawns[data.spawn] then
-        spawn = Config.Spawns[data.spawn].coords
-    end
-    
+-- Initialize on player spawn
+AddEventHandler('playerSpawned', function()
+    if loadingCharacter then return end
+    TriggerServerEvent('sl-multicharacter:server:setupCharacters')
+end)
+
+-- Cleanup on resource stop
+AddEventHandler('onResourceStop', function(resourceName)
+    if GetCurrentResourceName() ~= resourceName then return end
+    deleteCharacterCam()
     deleteCharacterPed()
-    SetCamActive(cam, false)
-    DestroyCam(cam, true)
-    RenderScriptCams(false, false, 1, true, true)
-    
-    DoScreenFadeOut(500)
-    Wait(2000)
-    SetEntityCoords(PlayerPedId(), spawn.x, spawn.y, spawn.z)
-    SetEntityHeading(PlayerPedId(), spawn.w)
-    FreezeEntityPosition(PlayerPedId(), false)
-    Wait(500)
-    DoScreenFadeIn(250)
-end)
-
--- Initial Setup
-CreateThread(function()
-    while true do
-        Wait(0)
-        if NetworkIsSessionStarted() then
-            TriggerEvent('sl-multicharacter:client:chooseChar')
-            break
-        end
-    end
+    SetNuiFocus(false, false)
 end)

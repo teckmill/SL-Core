@@ -25,11 +25,11 @@ server_scripts {
 
 dependencies {
     'sl-core',
-    'sl-vehicles',
+    'sl-vehicle',
     'sl-garage',
     'sl-menu',
     'PolyZone',
     'oxmysql'
 }
 
-lua54 'yes' 
+lua54 'yes'

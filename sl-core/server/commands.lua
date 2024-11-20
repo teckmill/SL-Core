@@ -1,112 +1,43 @@
--- Command Management System
 SLCore.Commands = {}
 SLCore.Commands.List = {}
 
--- Register a new command
-function SLCore.Commands.Add(name, help, arguments, argsrequired, callback, permission)
-    local restricted = true
-    if permission == nil or type(permission) ~= "string" then restricted = false end
-    
-    RegisterCommand(name, function(source, args, rawCommand)
-        -- Check if source is console
-        if source == 0 then
-            if SLCore.Commands.List[name].restricted then
-                -- Console has all permissions
-                callback(source, args, rawCommand)
-            else
-                callback(source, args, rawCommand)
-            end
-            return
-        end
-
-        local Player = SLCore.Functions.GetPlayer(source)
-        if Player == nil then return end
-
-        -- Check permission if restricted
-        if SLCore.Commands.List[name].restricted then
-            if Player.PlayerData.permission == permission then
-                callback(source, args, rawCommand)
-            else
-                TriggerClientEvent('sl-core:client:notify', source, {
-                    type = 'error',
-                    message = 'No permission for this command',
-                    duration = 5000
-                })
-            end
-        else
-            callback(source, args, rawCommand)
-        end
-    end, restricted)
-
-    SLCore.Commands.List[name] = {
-        name = name,
+SLCore.Commands.Add = function(name, help, arguments, argsrequired, callback, permission)
+    SLCore.Commands.List[name:lower()] = {
+        name = name:lower(),
         permission = permission,
         help = help,
         arguments = arguments,
         argsrequired = argsrequired,
-        restricted = restricted
+        callback = callback
     }
 end
 
--- Register default commands
-Citizen.CreateThread(function()
-    -- Vehicle commands
-    SLCore.Commands.Add("car", "Spawn a vehicle", {{name = "model", help = "Vehicle model name"}}, true, function(source, args)
-        local Player = SLCore.Functions.GetPlayer(source)
-        if not Player then return end
-        
-        if args[1] then
-            SLCore.Functions.CreateVehicle(source, args[1])
+SLCore.Commands.Refresh = function(source)
+    local Player = SLCore.Functions.GetPlayer(source)
+    if not Player then return end
+    for command, info in pairs(SLCore.Commands.List) do
+        if SLCore.Functions.HasPermission(source, info.permission) then
+            TriggerClientEvent('chat:addSuggestion', source, '/' .. command, info.help, info.arguments)
         end
-    end, "admin")
+    end
+end
 
-    SLCore.Commands.Add("dv", "Delete vehicle", {}, false, function(source)
-        TriggerClientEvent('sl-core:client:deleteVehicle', source)
-    end, "admin")
-
-    -- Player commands
-    SLCore.Commands.Add("id", "Check your id", {}, false, function(source)
-        local Player = SLCore.Functions.GetPlayer(source)
-        if not Player then return end
-        
-        TriggerClientEvent('sl-core:client:notify', source, {
-            type = 'primary',
-            message = 'ID: ' .. source,
-            duration = 5000
-        })
-    end)
-
-    -- Admin commands
-    SLCore.Commands.Add("setjob", "Set a player's job", {
-        {name = "id", help = "Player ID"},
-        {name = "job", help = "Job name"},
-        {name = "grade", help = "Job grade"}
-    }, true, function(source, args)
-        local Player = SLCore.Functions.GetPlayer(tonumber(args[1]))
-        if not Player then return end
-
-        Player.Functions.SetJob(args[2], tonumber(args[3]))
-    end, "admin")
-
-    SLCore.Commands.Add("setgang", "Set a player's gang", {
-        {name = "id", help = "Player ID"},
-        {name = "gang", help = "Gang name"},
-        {name = "grade", help = "Gang grade"}
-    }, true, function(source, args)
-        local Player = SLCore.Functions.GetPlayer(tonumber(args[1]))
-        if not Player then return end
-
-        Player.Functions.SetGang(args[2], tonumber(args[3]))
-    end, "admin")
-
-    SLCore.Commands.Add("givemoney", "Give money to a player", {
-        {name = "id", help = "Player ID"},
-        {name = "type", help = "Type of money (cash, bank, crypto)"},
-        {name = "amount", help = "Amount"}
-    }, true, function(source, args)
-        local Player = SLCore.Functions.GetPlayer(tonumber(args[1]))
-        if not Player then return end
-
-        Player.Functions.AddMoney(args[2], tonumber(args[3]), "Admin command")
-    end, "admin")
-end)
+-- Default commands
+SLCore.Commands.Add('tp', 'Teleport to a player or coords (Admin Only)', {}, false, function(source, args)
+    if not args[1] and not args[2] and not args[3] then
+        return
+    end
+    if args[1] and not args[2] and not args[3] then
+        local target = tonumber(args[1])
+        if target ~= source then
+            if GetPlayerPing(target) ~= 0 then
+                local targetCoords = GetEntityCoords(GetPlayerPed(target))
+                TriggerClientEvent('SLCore:Command:TeleportToPlayer', source, targetCoords)
+            else
+                TriggerClientEvent('SLCore:Notify', source, 'Player not online', 'error')
+            end
+        else
+            TriggerClientEvent('SLCore:Notify', source, 'You cannot teleport to yourself', 'error')
+        end
+    end
+end, 'admin')

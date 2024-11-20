@@ -25,5 +25,14 @@ files {
     'html/index.html',
     'html/style.css',
     'html/script.js',
-    'html/reset.css'
+    'html/reset.css',
+    'html/assets/*.png',
+    'html/assets/*.jpg'
+}
+
+lua54 'yes'
+
+dependencies {
+    'sl-core',
+    'oxmysql'
 }

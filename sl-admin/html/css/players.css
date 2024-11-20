@@ -1,0 +1,161 @@
+/* Players List */
+.players-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 20px;
+}
+
+.player-card {
+    background-color: var(--surface-color);
+    border-radius: 8px;
+    padding: 20px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.player-header {
+    display: flex;
+    align-items: center;
+    margin-bottom: 16px;
+}
+
+.player-avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    margin-right: 12px;
+    background-color: var(--primary-color);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-weight: 600;
+}
+
+.player-info {
+    flex: 1;
+}
+
+.player-name {
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--text-color);
+    margin-bottom: 4px;
+}
+
+.player-id {
+    font-size: 12px;
+    color: var(--text-secondary);
+}
+
+.player-details {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+    margin-bottom: 16px;
+}
+
+.detail-item {
+    display: flex;
+    flex-direction: column;
+}
+
+.detail-label {
+    font-size: 12px;
+    color: var(--text-secondary);
+    margin-bottom: 4px;
+}
+
+.detail-value {
+    font-size: 14px;
+    color: var(--text-color);
+}
+
+.player-actions {
+    display: flex;
+    gap: 8px;
+}
+
+.player-actions button {
+    flex: 1;
+    padding: 8px;
+    font-size: 12px;
+}
+
+/* Player Modal */
+.player-modal {
+    max-width: 600px;
+}
+
+.player-modal .tabs {
+    display: flex;
+    border-bottom: 1px solid var(--border-color);
+    margin-bottom: 20px;
+}
+
+.player-modal .tab {
+    padding: 12px 20px;
+    cursor: pointer;
+    color: var(--text-secondary);
+    border-bottom: 2px solid transparent;
+    transition: all 0.2s;
+}
+
+.player-modal .tab:hover {
+    color: var(--text-color);
+}
+
+.player-modal .tab.active {
+    color: var(--primary-color);
+    border-bottom-color: var(--primary-color);
+}
+
+.player-modal .tab-content {
+    display: none;
+}
+
+.player-modal .tab-content.active {
+    display: block;
+}
+
+/* Player Stats */
+.player-stats {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 16px;
+}
+
+.stat-item {
+    background-color: var(--background-color);
+    padding: 12px;
+    border-radius: 6px;
+}
+
+/* Inventory */
+.inventory-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
+    gap: 12px;
+}
+
+.inventory-item {
+    background-color: var(--background-color);
+    border-radius: 6px;
+    padding: 8px;
+    text-align: center;
+}
+
+.item-image {
+    width: 40px;
+    height: 40px;
+    margin: 0 auto 8px;
+}
+
+.item-name {
+    font-size: 12px;
+    color: var(--text-color);
+}
+
+.item-count {
+    font-size: 10px;
+    color: var(--text-secondary);
+}

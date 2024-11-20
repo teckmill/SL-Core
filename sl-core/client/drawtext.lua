@@ -1,22 +1,17 @@
 local function Draw3DText(x, y, z, text)
-    -- Basic 3D Text Function
+    -- Get screen coords from world coords
     local onScreen, _x, _y = World3dToScreen2d(x, y, z)
-    local px, py, pz = table.unpack(GetGameplayCamCoords())
-    local dist = #(vector3(px, py, pz) - vector3(x, y, z))
-    
-    local scale = (1 / dist) * 2
-    local fov = (1 / GetGameplayCamFov()) * 100
-    local scale = scale * fov
 
     if onScreen then
-        SetTextScale(0.0 * scale, 0.55 * scale)
+        -- Calculate text scale to use
+        local dist = #(GetGameplayCamCoords() - vector3(x, y, z))
+        local scale = 1.8 * (1 / dist) * (1 / GetGameplayCamFov()) * 100
+
+        -- Draw text on screen
+        SetTextScale(scale, scale)
         SetTextFont(4)
         SetTextProportional(1)
         SetTextColour(255, 255, 255, 215)
-        SetTextDropshadow(0, 0, 0, 0, 255)
-        SetTextEdge(2, 0, 0, 0, 150)
-        SetTextDropShadow()
-        SetTextOutline()
         SetTextEntry("STRING")
         SetTextCentre(1)
         AddTextComponentString(text)
@@ -24,34 +19,35 @@ local function Draw3DText(x, y, z, text)
     end
 end
 
-local function DrawText3D(coords, text)
-    -- Wrapper function for 3D Text
-    Draw3DText(coords.x, coords.y, coords.z, text)
+local function DrawText(text, position)
+    if not position then position = "left" end
+    
+    SendNUIMessage({
+        action = 'DRAW_TEXT',
+        data = {
+            text = text,
+            position = position
+        }
+    })
 end
 
--- Text UI Functions
-local function DrawText(text, position)
-    if position == "left" then
-        SetTextScale(0.35, 0.35)
-        SetTextFont(4)
-        SetTextProportional(1)
-        SetTextColour(255, 255, 255, 215)
-        SetTextEntry("STRING")
-        SetTextCentre(0)
-        AddTextComponentString(text)
-        DrawText(0.0, 0.0)
-    elseif position == "right" then
-        SetTextScale(0.35, 0.35)
-        SetTextFont(4)
-        SetTextProportional(1)
-        SetTextColour(255, 255, 255, 215)
-        SetTextEntry("STRING")
-        SetTextCentre(1)
-        AddTextComponentString(text)
-        DrawText(0.95, 0.9)
-    end
+local function HideText()
+    SendNUIMessage({
+        action = 'HIDE_TEXT'
+    })
+end
+
+local function ChangeText(text, position)
+    SendNUIMessage({
+        action = 'CHANGE_TEXT',
+        data = {
+            text = text,
+            position = position
+        }
+    })
 end
 
 exports('Draw3DText', Draw3DText)
-exports('DrawText3D', DrawText3D)
 exports('DrawText', DrawText)
+exports('HideText', HideText)
+exports('ChangeText', ChangeText)

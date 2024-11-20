@@ -1,19 +1,31 @@
 Config = {}
 
 Config.Debug = false
-Config.Commission = 0.10 -- Sales commission for dealers (10%)
-Config.FinanceCommission = 0.05 -- Finance commission for dealers (5%)
+Config.DealerJob = 'cardealer' -- Job name for car dealers
+
+-- Commission Settings
+Config.Commission = {
+    BaseRate = 0.10, -- Base commission rate (10%)
+    BonusThresholds = {
+        { minPrice = 500000, rate = 0.15 }, -- 15% for sales over 500k
+        { minPrice = 1000000, rate = 0.20 } -- 20% for sales over 1M
+    }
+}
+
+-- Finance Settings
+Config.Finance = {
+    Enabled = true,
+    InterestRate = 0.10, -- 10% annual interest rate
+    MinDownPayment = 0.10, -- Minimum 10% down payment
+    MaxMonths = 24, -- Maximum 24 month term
+    MinCreditScore = 500, -- Minimum credit score required
+    RequiredJob = nil -- No job requirement for financing
+}
 
 Config.PaymentType = {
     cash = 'cash',
     bank = 'bank',
     finance = 'finance'
-}
-
-Config.FinanceOptions = {
-    downPaymentMin = 10, -- Minimum down payment percentage
-    maxPayments = 24,    -- Maximum number of payments
-    interestRate = 0.1   -- 10% interest rate
 }
 
 Config.Shops = {

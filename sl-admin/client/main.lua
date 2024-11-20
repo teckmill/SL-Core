@@ -5,6 +5,9 @@ local isNoclip = false
 local isGodmode = false
 local isInvisible = false
 local lastCoords = nil
+local showCoords = false
+local showNames = false
+local entityMode = false
 
 -- Utility Functions
 local function ToggleNoclip()
@@ -47,6 +50,13 @@ local function OpenAdminMenu()
             isMenuHeader = true
         },
         {
+            header = Lang:t('menu.admin_options'),
+            icon = 'fas fa-cogs',
+            params = {
+                event = 'sl-admin:client:OpenAdminOptions'
+            }
+        },
+        {
             header = Lang:t('menu.player_management'),
             icon = 'fas fa-users',
             params = {
@@ -73,33 +83,192 @@ local function OpenAdminMenu()
             params = {
                 event = 'sl-admin:client:OpenDevTools'
             }
+        },
+        {
+            header = Lang:t('menu.weather_options'),
+            icon = 'fas fa-cloud-sun',
+            params = {
+                event = 'sl-admin:client:OpenWeatherMenu'
+            }
+        },
+        {
+            header = Lang:t('menu.dealer_list'),
+            icon = 'fas fa-cannabis',
+            params = {
+                event = 'sl-admin:client:OpenDealerMenu'
+            }
         }
     }
     
     exports['sl-menu']:openMenu(menu)
 end
 
--- Player Management
-local function GetNearbyPlayers()
-    local players = {}
-    local playerPed = PlayerPedId()
-    local playerCoords = GetEntityCoords(playerPed)
-    
-    for _, player in ipairs(GetActivePlayers()) do
-        local targetPed = GetPlayerPed(player)
-        local targetCoords = GetEntityCoords(targetPed)
-        local distance = #(playerCoords - targetCoords)
-        
-        if distance <= 5.0 then
-            players[#players + 1] = {
-                source = GetPlayerServerId(player),
-                name = GetPlayerName(player),
-                distance = distance
+-- Admin Options Menu
+local function OpenAdminOptions()
+    local menu = {
+        {
+            header = Lang:t('menu.admin_options'),
+            icon = 'fas fa-cogs',
+            isMenuHeader = true
+        },
+        {
+            header = Lang:t('menu.noclip'),
+            icon = 'fas fa-ghost',
+            params = {
+                event = 'sl-admin:client:ToggleNoclip'
             }
-        end
+        },
+        {
+            header = Lang:t('menu.godmode'),
+            icon = 'fas fa-pray',
+            params = {
+                event = 'sl-admin:client:ToggleGodmode'
+            }
+        },
+        {
+            header = Lang:t('menu.invisible'),
+            icon = 'fas fa-eye-slash',
+            params = {
+                event = 'sl-admin:client:ToggleInvisible'
+            }
+        },
+        {
+            header = Lang:t('menu.names'),
+            icon = 'fas fa-id-card',
+            params = {
+                event = 'sl-admin:client:ToggleNames'
+            }
+        },
+        {
+            header = Lang:t('menu.blips'),
+            icon = 'fas fa-map-marker',
+            params = {
+                event = 'sl-admin:client:ToggleBlips'
+            }
+        },
+        {
+            header = Lang:t('menu.coords'),
+            icon = 'fas fa-location-arrow',
+            params = {
+                event = 'sl-admin:client:ToggleCoords'
+            }
+        },
+        {
+            header = Lang:t('menu.dev_mode'),
+            icon = 'fas fa-code',
+            params = {
+                event = 'sl-admin:client:ToggleDevMode'
+            }
+        }
+    }
+    
+    exports['sl-menu']:openMenu(menu)
+end
+
+-- Player Management Menu
+local function OpenPlayerMenu()
+    local players = SLCore.Functions.GetPlayers()
+    local menu = {
+        {
+            header = Lang:t('menu.player_management'),
+            icon = 'fas fa-users',
+            isMenuHeader = true
+        }
+    }
+    
+    for _, player in pairs(players) do
+        menu[#menu + 1] = {
+            header = player.name,
+            txt = Lang:t('info.id') .. player.source,
+            icon = 'fas fa-user',
+            params = {
+                event = 'sl-admin:client:OpenPlayerOptions',
+                args = {
+                    playerId = player.source,
+                    playerName = player.name
+                }
+            }
+        }
     end
     
-    return players
+    exports['sl-menu']:openMenu(menu)
+end
+
+-- Player Options Menu
+local function OpenPlayerOptions(data)
+    local menu = {
+        {
+            header = Lang:t('menu.player_options') .. data.playerName,
+            icon = 'fas fa-user-cog',
+            isMenuHeader = true
+        },
+        {
+            header = Lang:t('menu.kill'),
+            icon = 'fas fa-skull',
+            params = {
+                event = 'sl-admin:client:KillPlayer',
+                args = data.playerId
+            }
+        },
+        {
+            header = Lang:t('menu.revive'),
+            icon = 'fas fa-heart',
+            params = {
+                event = 'sl-admin:client:RevivePlayer',
+                args = data.playerId
+            }
+        },
+        {
+            header = Lang:t('menu.freeze'),
+            icon = 'fas fa-snowflake',
+            params = {
+                event = 'sl-admin:client:FreezePlayer',
+                args = data.playerId
+            }
+        },
+        {
+            header = Lang:t('menu.spectate'),
+            icon = 'fas fa-eye',
+            params = {
+                event = 'sl-admin:client:SpectatePlayer',
+                args = data.playerId
+            }
+        },
+        {
+            header = Lang:t('menu.goto'),
+            icon = 'fas fa-location-arrow',
+            params = {
+                event = 'sl-admin:client:GotoPlayer',
+                args = data.playerId
+            }
+        },
+        {
+            header = Lang:t('menu.bring'),
+            icon = 'fas fa-hand-point-right',
+            params = {
+                event = 'sl-admin:client:BringPlayer',
+                args = data.playerId
+            }
+        },
+        {
+            header = Lang:t('menu.sit_vehicle'),
+            icon = 'fas fa-car-side',
+            params = {
+                event = 'sl-admin:client:SitInVehicle',
+                args = data.playerId
+            }
+        },
+        {
+            header = Lang:t('menu.open_inv'),
+            icon = 'fas fa-box',
+            params = {
+                event = 'sl-admin:client:OpenInventory',
+                args = data.playerId
+            }
+        }
+    }
+    
+    exports['sl-menu']:openMenu(menu)
 end
 
 -- Vehicle Management

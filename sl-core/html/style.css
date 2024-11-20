@@ -1,88 +1,92 @@
-/* Core UI Styles */
-.sl-container {
-    display: none;
-    position: absolute;
-    height: 100vh;
-    width: 100vw;
-    background-color: rgba(0, 0, 0, 0.5);
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Poppins', sans-serif;
 }
 
-.sl-ui {
+body {
+    height: 100vh;
+    width: 100vw;
+    overflow: hidden;
+}
+
+/* DrawText Styles */
+#drawtext-container {
     position: absolute;
     left: 50%;
     top: 50%;
     transform: translate(-50%, -50%);
-    background-color: #1a1a1a;
-    padding: 20px;
-    border-radius: 5px;
-    min-width: 300px;
-    color: white;
-}
-
-.sl-header {
-    text-align: center;
-    margin-bottom: 20px;
-}
-
-.sl-header h1 {
-    font-size: 24px;
-    margin: 0;
-}
-
-.sl-content {
-    margin-bottom: 20px;
-}
-
-.sl-button {
-    background-color: #4CAF50;
-    border: none;
-    color: white;
-    padding: 10px 20px;
-    text-align: center;
-    text-decoration: none;
-    display: inline-block;
-    font-size: 16px;
-    margin: 4px 2px;
-    cursor: pointer;
-    border-radius: 3px;
-    transition: background-color 0.3s;
-}
-
-.sl-button:hover {
-    background-color: #45a049;
-}
-
-.sl-input {
-    width: 100%;
-    padding: 12px 20px;
-    margin: 8px 0;
-    display: inline-block;
-    border: 1px solid #ccc;
-    border-radius: 4px;
-    box-sizing: border-box;
-    background-color: #2a2a2a;
-    color: white;
-}
-
-.sl-notification {
-    position: absolute;
-    top: 20px;
-    right: 20px;
-    padding: 15px;
-    background-color: #1a1a1a;
-    color: white;
-    border-radius: 5px;
     display: none;
-    animation: slideIn 0.5s ease-out;
 }
 
-@keyframes slideIn {
+.text {
+    color: white;
+    font-size: 1.2em;
+    text-shadow: 1px 1px 0px rgba(0, 0, 0, 0.75);
+    text-align: center;
+    padding: 0.5em 1em;
+    background: rgba(0, 0, 0, 0.6);
+    border-radius: 4px;
+    max-width: 400px;
+    margin: 0 auto;
+}
+
+/* Notification Styles */
+#notifications {
+    position: absolute;
+    right: 1%;
+    top: 2%;
+    width: 300px;
+}
+
+.notification {
+    padding: 8px;
+    margin-bottom: 5px;
+    border-radius: 4px;
+    font-size: 14px;
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    position: relative;
+    animation: fadeIn 0.3s ease-in-out;
+    background: rgba(0, 0, 0, 0.7);
+    color: white;
+    border-left: 4px solid #2ecc71;
+}
+
+.notification.error {
+    border-left-color: #e74c3c;
+}
+
+.notification.info {
+    border-left-color: #3498db;
+}
+
+.notification.warning {
+    border-left-color: #f1c40f;
+}
+
+@keyframes fadeIn {
     from {
-        transform: translateX(100%);
         opacity: 0;
+        transform: translateX(100%);
     }
     to {
-        transform: translateX(0);
         opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+@keyframes fadeOut {
+    from {
+        opacity: 1;
+        transform: translateX(0);
+    }
+    to {
+        opacity: 0;
+        transform: translateX(100%);
     }
 }

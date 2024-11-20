@@ -1,0 +1,97 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.container {
+    display: none;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+
+.radio-container {
+    width: 300px;
+    background: rgba(23, 23, 23, 0.95);
+    border-radius: 10px;
+    padding: 20px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+}
+
+.radio-header {
+    display: flex;
+    align-items: center;
+    margin-bottom: 20px;
+    color: #ffffff;
+    border-bottom: 2px solid #4a90e2;
+    padding-bottom: 10px;
+}
+
+.radio-header span {
+    margin-right: 10px;
+    color: #4a90e2;
+}
+
+.radio-content {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.frequency-display {
+    background: #2a2a2a;
+    padding: 10px;
+    border-radius: 5px;
+}
+
+.frequency-display input {
+    width: 100%;
+    background: transparent;
+    border: none;
+    color: #4a90e2;
+    font-size: 24px;
+    text-align: center;
+    outline: none;
+}
+
+.frequency-display input::-webkit-inner-spin-button,
+.frequency-display input::-webkit-outer-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+
+.radio-controls {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+}
+
+.radio-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 5px;
+    padding: 10px;
+    background: #4a90e2;
+    border: none;
+    border-radius: 5px;
+    color: white;
+    cursor: pointer;
+    transition: background 0.3s ease;
+}
+
+.radio-btn:hover {
+    background: #357abd;
+}
+
+.radio-btn:active {
+    transform: scale(0.98);
+}
+
+/* Show container when active */
+.container.active {
+    display: block;
+}

@@ -11,7 +11,6 @@ shared_scripts {
 }
 
 client_scripts {
-    '@sl-core/shared/utils.lua',
     'client/main.lua',
     'client/menu.lua',
     'client/employees.lua',
@@ -21,7 +20,6 @@ client_scripts {
 
 server_scripts {
     '@oxmysql/lib/MySQL.lua',
-    '@sl-core/shared/utils.lua',
     'server/main.lua',
     'server/employees.lua',
     'server/finances.lua',
@@ -38,5 +36,7 @@ dependencies {
     'sl-target',
     'oxmysql'
 }
+
+provide 'sl-business'
 
 lua54 'yes'

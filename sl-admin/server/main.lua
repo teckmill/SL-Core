@@ -1,7 +1,17 @@
-local SLCore = exports['sl-core']:GetCoreObject()
+local SLCore = nil
 local Reports = {}
 local SpectatingPlayers = {}
 local FrozenPlayers = {}
+
+-- Initialize SLCore
+CreateThread(function()
+    while SLCore == nil do
+        if GetResourceState('sl-core') == 'started' then
+            SLCore = exports['sl-core']:GetCoreObject()
+        end
+        Wait(100)
+    end
+end)
 
 -- Utility Functions
 local function IsPlayerAdmin(source)
@@ -92,6 +102,109 @@ RegisterNetEvent('sl-admin:server:BanPlayer', function(playerId, reason, duratio
     )
 end)
 
+RegisterNetEvent('sl-admin:server:RevivePlayer', function(playerId)
+    local source = source
+    if not HasPermission(source, 'revive') then
+        TriggerClientEvent('sl-core:client:Notify', source, Lang:t('error.no_permission'), 'error')
+        return
+    end
+
+    local targetPlayer = SLCore.Functions.GetPlayer(playerId)
+    if not targetPlayer then
+        TriggerClientEvent('sl-core:client:Notify', source, Lang:t('error.player_not_found'), 'error')
+        return
+    end
+
+    TriggerClientEvent('sl-ambulance:client:Revive', playerId)
+    
+    local adminName = GetPlayerName(source)
+    local playerName = GetPlayerName(playerId)
+    
+    if Config.LogActions['player_revived'] then
+        LogToDiscord('admin', Lang:t('logs.player_revived', {adminName, playerName}))
+    end
+end)
+
+RegisterNetEvent('sl-admin:server:GotoPlayer', function(playerId)
+    local source = source
+    if not HasPermission(source, 'goto') then
+        TriggerClientEvent('sl-core:client:Notify', source, Lang:t('error.no_permission'), 'error')
+        return
+    end
+
+    local targetPlayer = SLCore.Functions.GetPlayer(playerId)
+    if not targetPlayer then
+        TriggerClientEvent('sl-core:client:Notify', source, Lang:t('error.player_not_found'), 'error')
+        return
+    end
+
+    local targetPed = GetPlayerPed(playerId)
+    local coords = GetEntityCoords(targetPed)
+    
+    TriggerClientEvent('sl-admin:client:TeleportToCoords', source, coords)
+    
+    local adminName = GetPlayerName(source)
+    local playerName = GetPlayerName(playerId)
+    
+    if Config.LogActions['admin_goto'] then
+        LogToDiscord('admin', Lang:t('logs.admin_goto', {adminName, playerName}))
+    end
+end)
+
+RegisterNetEvent('sl-admin:server:BringPlayer', function(playerId)
+    local source = source
+    if not HasPermission(source, 'bring') then
+        TriggerClientEvent('sl-core:client:Notify', source, Lang:t('error.no_permission'), 'error')
+        return
+    end
+
+    local targetPlayer = SLCore.Functions.GetPlayer(playerId)
+    if not targetPlayer then
+        TriggerClientEvent('sl-core:client:Notify', source, Lang:t('error.player_not_found'), 'error')
+        return
+    end
+
+    local adminPed = GetPlayerPed(source)
+    local coords = GetEntityCoords(adminPed)
+    
+    TriggerClientEvent('sl-admin:client:TeleportToCoords', playerId, coords)
+    
+    local adminName = GetPlayerName(source)
+    local playerName = GetPlayerName(playerId)
+    
+    if Config.LogActions['admin_bring'] then
+        LogToDiscord('admin', Lang:t('logs.admin_bring', {adminName, playerName}))
+    end
+end)
+
+RegisterNetEvent('sl-admin:server:GiveItem', function(playerId, item, amount)
+    local source = source
+    if not HasPermission(source, 'giveitem') then
+        TriggerClientEvent('sl-core:client:Notify', source, Lang:t('error.no_permission'), 'error')
+        return
+    end
+
+    local targetPlayer = SLCore.Functions.GetPlayer(playerId)
+    if not targetPlayer then
+        TriggerClientEvent('sl-core:client:Notify', source, Lang:t('error.player_not_found'), 'error')
+        return
+    end
+
+    if not SLCore.Shared.Items[item] then
+        TriggerClientEvent('sl-core:client:Notify', source, Lang:t('error.invalid_item'), 'error')
+        return
+    end
+
+    targetPlayer.Functions.AddItem(item, amount)
+    
+    local adminName = GetPlayerName(source)
+    local playerName = GetPlayerName(playerId)
+    
+    if Config.LogActions['item_given'] then
+        LogToDiscord('admin', Lang:t('logs.item_given', {adminName, playerName, amount, item}))
+    end
+end)
+
 -- Report System
 RegisterNetEvent('sl-admin:server:SubmitReport', function(message)
     local source = source
@@ -161,6 +274,39 @@ RegisterNetEvent('sl-admin:server:SpectatePlayer', function(playerId)
     end
 end)
 
+-- Vehicle Management
+RegisterNetEvent('sl-admin:server:SpawnVehicle', function(model)
+    local source = source
+    if not HasPermission(source, 'vehicle') then
+        TriggerClientEvent('sl-core:client:Notify', source, Lang:t('error.no_permission'), 'error')
+        return
+    end
+
+    TriggerClientEvent('sl-admin:client:SpawnVehicle', source, model)
+    
+    local adminName = GetPlayerName(source)
+    
+    if Config.LogActions['vehicle_spawned'] then
+        LogToDiscord('admin', Lang:t('logs.vehicle_spawned', {adminName, model}))
+    end
+end)
+
+RegisterNetEvent('sl-admin:server:DeleteVehicle', function()
+    local source = source
+    if not HasPermission(source, 'vehicle') then
+        TriggerClientEvent('sl-core:client:Notify', source, Lang:t('error.no_permission'), 'error')
+        return
+    end
+
+    TriggerClientEvent('sl-admin:client:DeleteVehicle', source)
+    
+    local adminName = GetPlayerName(source)
+    
+    if Config.LogActions['vehicle_deleted'] then
+        LogToDiscord('admin', Lang:t('logs.vehicle_deleted', {adminName}))
+    end
+end)
+
 -- Weather and Time Control
 RegisterNetEvent('sl-admin:server:SetWeather', function(weather)
     local source = source
@@ -169,29 +315,62 @@ RegisterNetEvent('sl-admin:server:SetWeather', function(weather)
         return
     end
 
-    if not Config.WeatherTypes[weather] then
-        TriggerClientEvent('sl-core:client:Notify', source, Lang:t('error.invalid_weather'), 'error')
-        return
-    end
-
     TriggerClientEvent('sl-admin:client:SetWeather', -1, weather)
+    
+    local adminName = GetPlayerName(source)
+    
     if Config.LogActions['weather_changed'] then
-        LogToDiscord('actions', string.format('Weather changed to %s by %s', weather, GetPlayerName(source)))
+        LogToDiscord('admin', Lang:t('logs.weather_changed', {adminName, weather}))
     end
 end)
 
--- Vehicle Management
-RegisterNetEvent('sl-admin:server:SpawnVehicle', function(model)
+RegisterNetEvent('sl-admin:server:SetTime', function(hour)
     local source = source
-    if not HasPermission(source, 'spawnvehicle') then
+    if not HasPermission(source, 'time') then
         TriggerClientEvent('sl-core:client:Notify', source, Lang:t('error.no_permission'), 'error')
         return
     end
 
-    TriggerClientEvent('sl-admin:client:SpawnVehicle', source, model)
+    TriggerClientEvent('sl-admin:client:SetTime', -1, hour)
     
-    if Config.LogActions['vehicle_spawned'] then
-        LogToDiscord('spawns', Lang:t('logs.vehicle_spawned', {GetPlayerName(source), model}))
+    local adminName = GetPlayerName(source)
+    
+    if Config.LogActions['time_changed'] then
+        LogToDiscord('admin', Lang:t('logs.time_changed', {adminName, hour}))
+    end
+end)
+
+-- Developer Tools
+RegisterNetEvent('sl-admin:server:ToggleDevMode', function()
+    local source = source
+    if not HasPermission(source, 'developer') then
+        TriggerClientEvent('sl-core:client:Notify', source, Lang:t('error.no_permission'), 'error')
+        return
+    end
+
+    TriggerClientEvent('sl-admin:client:ToggleDevMode', source)
+end)
+
+RegisterNetEvent('sl-admin:server:OpenInventory', function(playerId)
+    local source = source
+    if not HasPermission(source, 'inventory') then
+        TriggerClientEvent('sl-core:client:Notify', source, Lang:t('error.no_permission'), 'error')
+        return
+    end
+
+    local targetPlayer = SLCore.Functions.GetPlayer(playerId)
+    if not targetPlayer then
+        TriggerClientEvent('sl-core:client:Notify', source, Lang:t('error.player_not_found'), 'error')
+        return
+    end
+
+    TriggerClientEvent('sl-inventory:client:OpenPlayerInventory', source, playerId)
+    
+    local adminName = GetPlayerName(source)
+    local playerName = GetPlayerName(playerId)
+    
+    if Config.LogActions['inventory_opened'] then
+        LogToDiscord('admin', Lang:t('logs.inventory_opened', {adminName, playerName}))
     end
 end)
 

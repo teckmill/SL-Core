@@ -1,72 +1,60 @@
 # SL-Core Framework
 
-A modern, lightweight, and extensible framework for FiveM servers.
+A powerful and modular FiveM framework designed for building immersive roleplay servers.
 
 ## Features
 
-- Player Management System
-- Money & Banking System
-- Job System
-- Gang System
-- Inventory System
-- Vehicle Management
-- Database Integration
-- Notification System
-- Callback System
+- Complete player management system
+- Job and gang system
+- Inventory system
+- Vehicle management
+- Money management (cash, bank, crypto)
+- Admin commands
+- Extensive configuration options
+- Localization support
+- Modern UI with notifications
+- Database integration with MySQL
 
 ## Dependencies
 
-- oxmysql
+- [oxmysql](https://github.com/overextended/oxmysql)
+- FiveM/CFX server
+- MySQL server
 
 ## Installation
 
-1. Import `slcore.sql` into your database
-2. Ensure you have oxmysql installed
-3. Add the following to your server.cfg:
+1. Install the required dependencies
+2. Import `slcore.sql` into your database
+3. Add the following to your `server.cfg`:
+
 ```cfg
 ensure oxmysql
 ensure sl-core
 ```
 
-## Usage
-
-To use SL-Core in your resources:
-
-```lua
-local SLCore = exports['sl-core']:GetCoreObject()
-```
+4. Configure the framework in `config.lua`
+5. Start your server
 
 ## Configuration
 
-All configuration can be found in `config.lua`. Make sure to adjust settings according to your server's needs.
+The framework can be configured through various files:
 
-## Events
+- `config.lua`: Main configuration file
+- `shared/jobs.lua`: Job configurations
+- `shared/gangs.lua`: Gang configurations
+- `shared/items.lua`: Item definitions
+- `shared/vehicles.lua`: Vehicle configurations
+- `shared/weapons.lua`: Weapon configurations
+- `shared/locations.lua`: Location definitions
 
-### Client Events
-- `sl-core:client:updatePlayerData` - Updates player data
-- `sl-core:client:moneyChange` - Triggered when player's money changes
+## Documentation
 
-### Server Events
-- `sl-core:server:triggerCallback` - Used for server callbacks
-
-## Functions
-
-### Client Functions
-- `SLCore.Functions.GetPlayerData()`
-- `SLCore.Functions.Notify()`
-- `SLCore.Functions.DrawText()`
-- `SLCore.Functions.TriggerCallback()`
-
-### Server Functions
-- `SLCore.Functions.CreatePlayer()`
-- `SLCore.Functions.AddMoney()`
-- `SLCore.Functions.SetJob()`
-- `SLCore.Functions.SetGang()`
+For detailed documentation on functions, events, and exports, please refer to our [Wiki](link-to-wiki).
 
 ## Contributing
 
-Feel free to submit pull requests and report issues.
+Contributions are welcome! Please feel free to submit a Pull Request.
 
 ## License
 
-This project is licensed under the MIT License.
+This project is licensed under the MIT License - see the LICENSE file for details.

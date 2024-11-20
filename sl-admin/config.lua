@@ -99,53 +99,85 @@ Config.WeatherTypes = {
 
 -- Action Permissions
 Config.Permissions = {
-    ['noclip'] = 2, -- moderator and above
-    ['godmode'] = 3, -- admin and above
-    ['spawnvehicle'] = 2,
-    ['fixvehicle'] = 1,
-    ['heal'] = 1,
-    ['revive'] = 1,
+    ['menu'] = 1,
     ['kick'] = 2,
     ['ban'] = 3,
     ['unban'] = 3,
-    ['teleport'] = 1,
-    ['setjob'] = 3,
-    ['give_money'] = 4,
-    ['give_item'] = 3,
-    ['weather'] = 2,
-    ['time'] = 2,
-    ['announce'] = 2,
-    ['freeze'] = 2,
     ['spectate'] = 2,
-    ['reports'] = 1,
-    ['warn'] = 1,
-    ['viewwarnings'] = 1,
-    ['clearwarnings'] = 3
+    ['teleport'] = 2,
+    ['freeze'] = 2,
+    ['revive'] = 2,
+    ['heal'] = 2,
+    ['goto'] = 2,
+    ['bring'] = 2,
+    ['noclip'] = 2,
+    ['godmode'] = 3,
+    ['invisible'] = 3,
+    ['giveitem'] = 4,
+    ['vehicle'] = 2,
+    ['weather'] = 3,
+    ['time'] = 3,
+    ['developer'] = 4,
+    ['inventory'] = 3,
+    ['reports'] = 2
 }
 
--- Logging Settings
+-- Discord Log Channels
+Config.DiscordLogChannels = {
+    ['kicks'] = '', -- Add webhook URL for kick logs
+    ['bans'] = '', -- Add webhook URL for ban logs
+    ['admin'] = '', -- Add webhook URL for general admin actions
+    ['reports'] = '' -- Add webhook URL for player reports
+}
+
+-- Log Actions
 Config.LogActions = {
-    ['player_banned'] = true,
     ['player_kicked'] = true,
-    ['item_spawned'] = true,
-    ['money_given'] = true,
+    ['player_banned'] = true,
+    ['player_revived'] = true,
+    ['admin_goto'] = true,
+    ['admin_bring'] = true,
+    ['item_given'] = true,
     ['vehicle_spawned'] = true,
-    ['noclip_used'] = true,
-    ['godmode_used'] = true,
-    ['teleport_used'] = true,
+    ['vehicle_deleted'] = true,
     ['weather_changed'] = true,
     ['time_changed'] = true,
-    ['report_handled'] = true
+    ['inventory_opened'] = true,
+    ['report_submitted'] = true,
+    ['report_closed'] = true
 }
 
--- Discord Integration
-Config.DiscordLogChannels = {
-    ['bans'] = '', -- Add Discord webhook for ban logs
-    ['kicks'] = '', -- Add Discord webhook for kick logs
-    ['spawns'] = '', -- Add Discord webhook for item/vehicle spawns
-    ['reports'] = '', -- Add Discord webhook for player reports
-    ['actions'] = '' -- Add Discord webhook for general admin actions
+-- Developer Tools
+Config.DevTools = {
+    ['show_coords'] = true,
+    ['show_heading'] = true,
+    ['show_entity_info'] = true,
+    ['show_vehicle_info'] = true
 }
+
+-- Vehicle Spawn Settings
+Config.VehicleSpawnClean = true
+Config.VehicleSpawnUpgraded = false
+Config.VehicleSpawnInvincible = false
+
+-- Player Management Settings
+Config.ReviveHealthAmount = 200
+Config.ReviveArmorAmount = 0
+Config.HealHealthAmount = 200
+Config.HealArmorAmount = 100
+
+-- Menu Display Settings
+Config.MenuAlign = 'top-right'
+Config.MenuWidth = '400px'
+Config.MenuMaxHeight = '70vh'
+Config.MenuItemHeight = '50px'
+Config.MenuItemSpacing = '2px'
+Config.MenuBackgroundColor = '#1a1a1a'
+Config.MenuTextColor = '#ffffff'
+Config.MenuHoverColor = '#2a2a2a'
+Config.MenuBorderRadius = '4px'
+Config.MenuFontSize = '14px'
+Config.MenuFontFamily = 'Roboto, sans-serif'
 
 -- Menu Features
 Config.MenuFeatures = {

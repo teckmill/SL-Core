@@ -13,7 +13,6 @@ shared_scripts {
 }
 
 client_scripts {
-    '@sl-core/client/wrapper.lua',
     'client/main.lua',
     'client/animation.lua',
     'client/apps/*.lua'
@@ -21,7 +20,6 @@ client_scripts {
 
 server_scripts {
     '@oxmysql/lib/MySQL.lua',
-    '@sl-core/server/wrapper.lua',
     'server/main.lua',
     'server/apps/*.lua'
 }
@@ -43,5 +41,7 @@ dependencies {
     'sl-input',
     'oxmysql'
 }
+
+provide 'sl-phone'
 
 lua54 'yes'

@@ -1,18 +1,16 @@
 fx_version 'cerulean'
 game 'gta5'
 
-description 'SL-Apartments - Advanced Housing System'
+author 'SL Framework'
+description 'Apartment system for SL Framework'
 version '1.0.0'
 
 shared_scripts {
-    '@sl-core/shared/locale.lua',
     'locales/en.lua',
     'config.lua'
 }
 
 client_scripts {
-    '@PolyZone/client.lua',
-    '@PolyZone/BoxZone.lua',
     'client/main.lua',
     'client/functions.lua',
     'client/interior.lua',
@@ -27,9 +25,7 @@ server_scripts {
 
 dependencies {
     'sl-core',
-    'sl-inventory',
-    'PolyZone',
     'oxmysql'
 }
 
-lua54 'yes' 
+lua54 'yes'

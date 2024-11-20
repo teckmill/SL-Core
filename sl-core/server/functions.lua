@@ -1,7 +1,15 @@
--- Core Functions
-SLCore.Functions = SLCore.Functions or {}
+SLCore.Functions = {}
 
--- Get Identifier
+function SLCore.Functions.CreateCallback(name, cb)
+    SLCore.ServerCallbacks[name] = cb
+end
+
+function SLCore.Functions.TriggerCallback(name, source, cb, ...)
+    if SLCore.ServerCallbacks[name] then
+        SLCore.ServerCallbacks[name](source, cb, ...)
+    end
+end
+
 function SLCore.Functions.GetIdentifier(source, idtype)
     local identifiers = GetPlayerIdentifiers(source)
     for _, identifier in pairs(identifiers) do
@@ -12,7 +20,6 @@ function SLCore.Functions.GetIdentifier(source, idtype)
     return nil
 end
 
--- Get Source
 function SLCore.Functions.GetSource(identifier)
     for src, _ in pairs(SLCore.Players) do
         local idens = GetPlayerIdentifiers(src)
@@ -25,174 +32,48 @@ function SLCore.Functions.GetSource(identifier)
     return nil
 end
 
--- Create Callback
-function SLCore.Functions.CreateCallback(name, cb)
-    SLCore.ServerCallbacks[name] = cb
-end
-
--- Trigger Callback
-function SLCore.Functions.TriggerCallback(name, source, cb, ...)
-    if SLCore.ServerCallbacks[name] then
-        SLCore.ServerCallbacks[name](source, cb, ...)
+function SLCore.Functions.GetPlayer(source)
+    if type(source) == 'number' then
+        return SLCore.Players[source]
+    else
+        return SLCore.Players[SLCore.Functions.GetSource(source)]
     end
 end
 
--- Create Use Item
-function SLCore.Functions.CreateUseableItem(item, cb)
-    SLCore.UseableItems[item] = cb
-end
-
--- Get Random String
-function SLCore.Functions.GetRandomString(length)
-    local charset = {}
-    for i = 48, 57 do table.insert(charset, string.char(i)) end
-    for i = 65, 90 do table.insert(charset, string.char(i)) end
-    for i = 97, 122 do table.insert(charset, string.char(i)) end
-    
-    if not length or length <= 0 then length = 10 end
-    math.randomseed(os.clock()^5)
-    
-    local retVal = ""
-    for i = 1, length do
-        retVal = retVal .. charset[math.random(1, #charset)]
-    end
-    return retVal
-end
-
--- Get Random Int
-function SLCore.Functions.GetRandomInt(length)
-    local charset = {}
-    for i = 48, 57 do table.insert(charset, string.char(i)) end
-    
-    if not length or length <= 0 then length = 10 end
-    math.randomseed(os.clock()^5)
-    
-    local retVal = ""
-    for i = 1, length do
-        retVal = retVal .. charset[math.random(1, #charset)]
-    end
-    return retVal
-end
-
--- Split String
-function SLCore.Functions.SplitStr(str, delimiter)
-    local result = {}
-    local from = 1
-    local delim_from, delim_to = string.find(str, delimiter, from)
-    while delim_from do
-        table.insert(result, string.sub(str, from, delim_from - 1))
-        from = delim_to + 1
-        delim_from, delim_to = string.find(str, delimiter, from)
-    end
-    table.insert(result, string.sub(str, from))
-    return result
-end
-
--- Round Number
-function SLCore.Functions.Round(value, numDecimalPlaces)
-    if not numDecimalPlaces then return math.floor(value + 0.5) end
-    local power = 10^numDecimalPlaces
-    return math.floor((value * power) + 0.5) / (power)
-end
-
--- UUID
-function SLCore.Functions.UUID()
-    local template ='xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'
-    return string.gsub(template, '[xy]', function (c)
-        local v = (c == 'x') and math.random(0, 0xf) or math.random(8, 0xb)
-        return string.format('%x', v)
-    end)
-end
-
--- Get Coords
-function SLCore.Functions.GetCoords(entity)
-    local coords = GetEntityCoords(entity)
-    local heading = GetEntityHeading(entity)
-    return vector4(coords.x, coords.y, coords.z, heading)
-end
-
--- Title Case
-function SLCore.Functions.TitleCase(str)
-    return str:gsub("(%a)([%w_']*)", function(first, rest)
-        return first:upper()..rest:lower()
-    end)
-end
-
--- Load JSON File
-function SLCore.Functions.LoadJSON(file)
-    local content = LoadResourceFile(GetCurrentResourceName(), file)
-    if content then
-        return json.decode(content)
-    end
-    return nil
-end
-
--- Save JSON File
-function SLCore.Functions.SaveJSON(file, data)
-    SaveResourceFile(GetCurrentResourceName(), file, json.encode(data, {indent = true}), -1)
-end
-
--- Print Table
-function SLCore.Functions.PrintTable(table, indent)
-    indent = indent or 0
-    for k, v in pairs(table) do
-        local tblType = type(v)
-        local formatting = string.rep("  ", indent) .. k .. ": "
-        
-        if tblType == "table" then
-            print(formatting)
-            SLCore.Functions.PrintTable(v, indent + 1)
-        elseif tblType == "boolean" then
-            print(formatting .. tostring(v))
-        else
-            print(formatting .. v)
-        end
-    end
-end
-
--- Debug
-function SLCore.Debug(resource, obj, depth)
-    TriggerEvent('sl-core:server:debug', resource, obj, depth)
-end
-
--- Player Functions
 function SLCore.Functions.GetPlayers()
     local sources = {}
-    for k, v in pairs(SLCore.Players) do
+    for k, _ in pairs(SLCore.Players) do
         sources[#sources+1] = k
     end
     return sources
 end
 
--- Permission Functions
+function SLCore.Functions.CreateUseableItem(item, cb)
+    SLCore.UseableItems[item] = cb
+end
+
 function SLCore.Functions.HasPermission(source, permission)
-    if type(permission) == "string" then
-        if SLCore.Config.Server.PermissionList[permission] then
-            if SLCore.Config.Server.PermissionList[permission][tostring(source)] then
-                return true
-            end
-        end
-    elseif type(permission) == "table" then
-        for _, perm in pairs(permission) do
-            if SLCore.Config.Server.PermissionList[perm] then
-                if SLCore.Config.Server.PermissionList[perm][tostring(source)] then
-                    return true
-                end
-            end
+    local license = SLCore.Functions.GetIdentifier(source, 'license')
+    if permission == 'admin' or permission == 'god' then
+        if IsPlayerAceAllowed(source, 'command') then
+            return true
         end
     end
     return false
 end
 
-function SLCore.Functions.AddPermission(source, permission)
-    if not SLCore.Config.Server.PermissionList[permission] then
-        SLCore.Config.Server.PermissionList[permission] = {}
+function SLCore.Functions.Kick(source, reason, setKickReason, deferrals)
+    reason = '\n' .. reason .. '\n🔸 Check our Discord for further information: ' .. SLCore.Config.Server.Discord
+    if setKickReason then
+        setKickReason(reason)
     end
-    SLCore.Config.Server.PermissionList[permission][tostring(source)] = true
-end
-
-function SLCore.Functions.RemovePermission(source, permission)
-    if SLCore.Config.Server.PermissionList[permission] then
-        SLCore.Config.Server.PermissionList[permission][tostring(source)] = nil
-    end
+    CreateThread(function()
+        if deferrals then
+            deferrals.update(reason)
+            Wait(2500)
+        end
+        if source then
+            DropPlayer(source, reason)
+        end
+    end)
 end

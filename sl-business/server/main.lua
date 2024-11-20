@@ -1,45 +1,106 @@
-local SLCore = exports['sl-core']:GetCoreObject()
-local Businesses = {}
-local CachedPlayers = {}
+local SLCore = nil
+local CoreReady = false
 
--- Initialize
-CreateThread(function()
-    local success = pcall(function()
-        MySQL.query([[
-            CREATE TABLE IF NOT EXISTS businesses (
-                id VARCHAR(50) PRIMARY KEY,
-                name VARCHAR(100) NOT NULL,
-                owner VARCHAR(50) NOT NULL,
-                type VARCHAR(50) NOT NULL,
-                funds DECIMAL(10,2) DEFAULT 0.00,
-                inventory JSON,
-                employees JSON,
-                settings JSON,
-                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-                updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
-            )
+-- Initialize Database
+local function InitializeDatabase()
+    MySQL.ready(function()
+        MySQL.Sync.execute([[
+            CREATE TABLE IF NOT EXISTS `businesses` (
+                `id` int(11) NOT NULL AUTO_INCREMENT,
+                `name` varchar(50) NOT NULL,
+                `owner` varchar(60) DEFAULT NULL,
+                `type` varchar(50) NOT NULL,
+                `money` int(11) NOT NULL DEFAULT 0,
+                `employees` text DEFAULT NULL,
+                `inventory` text DEFAULT NULL,
+                `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
+                PRIMARY KEY (`id`),
+                UNIQUE KEY `name` (`name`)
+            ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
         ]])
+
+        MySQL.Sync.execute([[
+            CREATE TABLE IF NOT EXISTS `business_grades` (
+                `id` int(11) NOT NULL AUTO_INCREMENT,
+                `business_id` int(11) NOT NULL,
+                `grade` int(11) NOT NULL,
+                `name` varchar(50) NOT NULL,
+                `salary` int(11) NOT NULL DEFAULT 0,
+                PRIMARY KEY (`id`),
+                KEY `business_id` (`business_id`)
+            ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+        ]])
+
+        print('^2[SL-Business] ^7Database tables initialized successfully')
+    end)
+end
+
+-- Register Server Callbacks
+local function RegisterCallbacks()
+    if not CoreReady then return end
+
+    SLCore.Functions.CreateCallback('sl-business:server:GetBusinesses', function(source, cb)
+        local Player = SLCore.Functions.GetPlayer(source)
+        if not Player then return cb({}) end
+        
+        local result = MySQL.Sync.fetchAll('SELECT * FROM businesses WHERE owner = ?', {
+            Player.PlayerData.citizenid
+        })
+        cb(result)
+    end)
+
+    SLCore.Functions.CreateCallback('sl-business:server:GetEmployees', function(source, cb, businessId)
+        local result = MySQL.Sync.fetchAll('SELECT * FROM business_employees WHERE business_id = ?', {
+            businessId
+        })
+        cb(result)
+    end)
+
+    SLCore.Functions.CreateCallback('sl-business:server:getBusinessData', function(source, cb, businessId)
+        if not CoreReady then return cb(nil) end
+        cb(Businesses[businessId] or nil)
     end)
     
-    if success then
-        LoadBusinesses()
-    else
-        print("^1[ERROR] Failed to initialize business database^0")
+    print('^2[SL-Business] ^7Callbacks registered successfully')
+end
+
+-- Wait for core to be ready
+CreateThread(function()
+    while SLCore == nil do
+        if GetResourceState('sl-core') == 'started' then
+            SLCore = exports['sl-core']:GetCoreObject()
+            if SLCore then
+                CoreReady = true
+                print('^2[SL-Business] ^7Successfully connected to SL-Core')
+                InitializeDatabase()
+                RegisterCallbacks()
+                LoadBusinesses()
+                break
+            end
+        end
+        Wait(100)
     end
 end)
 
--- Core Functions
+local Businesses = {}
+local CachedPlayers = {}
+
+-- Load all businesses into memory
 function LoadBusinesses()
-    local results = MySQL.query.await('SELECT * FROM businesses')
+    if not CoreReady then return end
+    
+    local results = MySQL.Sync.fetchAll('SELECT * FROM businesses')
+    if not results then return end
+    
     for _, business in ipairs(results) do
-        business.inventory = json.decode(business.inventory or '{}')
-        business.employees = json.decode(business.employees or '{}')
-        business.settings = json.decode(business.settings or '{}')
         Businesses[business.id] = business
     end
 end
 
+-- Core Functions
 function CreateBusiness(owner, data)
+    if not CoreReady then return false end
+    
     if not owner or not data.name or not data.type then return false end
     
     local businessId = SLCore.Shared.RandomStr(10)
@@ -68,10 +129,14 @@ function CreateBusiness(owner, data)
 end
 
 function GetBusiness(businessId)
+    if not CoreReady then return nil end
+    
     return Businesses[businessId]
 end
 
 function UpdateBusiness(businessId, data)
+    if not CoreReady then return false end
+    
     if not Businesses[businessId] then return false end
     
     local success = pcall(function()
@@ -88,6 +153,8 @@ function UpdateBusiness(businessId, data)
 end
 
 function DeleteBusiness(businessId)
+    if not CoreReady then return false end
+    
     if not Businesses[businessId] then return false end
     
     local success = pcall(function()
@@ -102,6 +169,8 @@ function DeleteBusiness(businessId)
 end
 
 function ProcessTransaction(businessId, data)
+    if not CoreReady then return false end
+    
     local business = Businesses[businessId]
     if not business then return false end
     
@@ -126,6 +195,8 @@ end
 
 -- Events
 RegisterNetEvent('sl-business:server:createBusiness', function(data)
+    if not CoreReady then return end
+    
     local src = source
     local Player = SLCore.Functions.GetPlayer(src)
     if not Player then return end
@@ -150,6 +221,8 @@ RegisterNetEvent('sl-business:server:createBusiness', function(data)
 end)
 
 RegisterNetEvent('sl-business:server:updateBusiness', function(businessId, data)
+    if not CoreReady then return end
+    
     local src = source
     local Player = SLCore.Functions.GetPlayer(src)
     if not Player then return end
@@ -169,41 +242,19 @@ RegisterNetEvent('sl-business:server:updateBusiness', function(businessId, data)
 end)
 
 RegisterNetEvent('sl-business:server:processTransaction', function(businessId, data)
+    if not CoreReady or not SLCore then return end
+    
     local src = source
     local Player = SLCore.Functions.GetPlayer(src)
     if not Player then return end
     
-    local business = Businesses[businessId]
-    if not business or business.owner ~= Player.PlayerData.citizenid then
-        TriggerClientEvent('SLCore:Notify', src, 'No permission', 'error')
-        return
-    end
-    
-    if ProcessTransaction(businessId, data) then
-        TriggerClientEvent('SLCore:Notify', src, 'Transaction processed', 'success')
+    local success = ProcessTransaction(businessId, data)
+    if success then
+        TriggerClientEvent('sl-core:client:notify', src, 'Transaction processed', 'success')
         TriggerClientEvent('sl-business:client:transactionProcessed', src, businessId, data)
     else
-        TriggerClientEvent('SLCore:Notify', src, 'Failed to process transaction', 'error')
+        TriggerClientEvent('sl-core:client:notify', src, 'Failed to process transaction', 'error')
     end
-end)
-
--- Callbacks
-SLCore.Functions.CreateCallback('sl-business:server:getBusinesses', function(source, cb)
-    local Player = SLCore.Functions.GetPlayer(source)
-    if not Player then return cb({}) end
-    
-    local playerBusinesses = {}
-    for id, business in pairs(Businesses) do
-        if business.owner == Player.PlayerData.citizenid then
-            playerBusinesses[id] = business
-        end
-    end
-    
-    cb(playerBusinesses)
-end)
-
-SLCore.Functions.CreateCallback('sl-business:server:getBusiness', function(source, cb, businessId)
-    cb(Businesses[businessId])
 end)
 
 -- Exports

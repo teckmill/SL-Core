@@ -1,0 +1,101 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+body {
+    width: 100vw;
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: transparent;
+}
+
+#radio-container {
+    width: 300px;
+    background: rgba(23, 23, 23, 0.9);
+    border-radius: 10px;
+    padding: 20px;
+    color: white;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+}
+
+.radio-header {
+    display: flex;
+    align-items: center;
+    margin-bottom: 20px;
+    padding-bottom: 10px;
+    border-bottom: 2px solid #2196F3;
+}
+
+.radio-header img {
+    width: 30px;
+    height: 30px;
+    margin-right: 10px;
+}
+
+.radio-header span {
+    font-size: 1.2em;
+    font-weight: bold;
+}
+
+.channel-input {
+    margin-bottom: 15px;
+}
+
+.channel-input input {
+    width: 100%;
+    padding: 10px;
+    border: none;
+    border-radius: 5px;
+    background: rgba(255, 255, 255, 0.1);
+    color: white;
+    font-size: 1.1em;
+    text-align: center;
+}
+
+.channel-input input:focus {
+    outline: none;
+    background: rgba(255, 255, 255, 0.2);
+}
+
+.radio-buttons {
+    display: flex;
+    justify-content: space-between;
+    gap: 10px;
+}
+
+button {
+    flex: 1;
+    padding: 10px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-weight: bold;
+    transition: all 0.3s ease;
+}
+
+#joinChannel {
+    background: #2196F3;
+    color: white;
+}
+
+#joinChannel:hover {
+    background: #1976D2;
+}
+
+#leaveChannel {
+    background: #f44336;
+    color: white;
+}
+
+#leaveChannel:hover {
+    background: #d32f2f;
+}
+
+.hidden {
+    display: none;
+}

@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SL Radio</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <div id="radio-container" class="hidden">
+        <div class="radio-header">
+            <img src="img/radio.png" alt="Radio">
+            <span>Police Radio</span>
+        </div>
+        <div class="radio-content">
+            <div class="channel-input">
+                <input type="number" id="channel" placeholder="Channel" min="1" max="500">
+            </div>
+            <div class="radio-buttons">
+                <button id="joinChannel">Connect</button>
+                <button id="leaveChannel">Disconnect</button>
+            </div>
+        </div>
+    </div>
+    <script src="js/script.js"></script>
+</body>
+</html>

@@ -4,7 +4,20 @@ local SLCore = exports['sl-core']:GetCoreObject()
 CreateThread(function()
     MySQL.ready(function()
         -- Create tables if they don't exist
-        MySQL.Sync.execute(LoadResourceFile(GetCurrentResourceName(), 'sql/dealership.sql'))
+        local sqlFile = LoadResourceFile(GetCurrentResourceName(), 'sql/dealership.sql')
+        local statements = {}
+        
+        -- Split the SQL file into individual statements
+        for statement in sqlFile:gmatch("CREATE TABLE.-;") do
+            table.insert(statements, statement)
+        end
+        
+        -- Execute each statement separately
+        for _, statement in ipairs(statements) do
+            MySQL.Sync.execute(statement)
+        end
+        
+        print('^2[SL-Dealership] ^7Database tables initialized successfully')
         InitializeStock()
     end)
 end)

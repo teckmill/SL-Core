@@ -1,4 +1,15 @@
-local SLCore = exports['sl-core']:GetCoreObject()
+local SLCore = nil
+
+-- Wait for core to be ready
+CreateThread(function()
+    while SLCore == nil do
+        SLCore = exports['sl-core']:GetCoreObject()
+        if not SLCore then 
+            Wait(100)
+        end
+    end
+end)
+
 local PlayerData = {}
 local PhoneData = {}
 local CurrentApplication = nil
@@ -34,7 +45,7 @@ local function LoadAnimation(dict)
     while not HasAnimDictLoaded(dict) do
         RequestAnimDict(dict)
         Wait(5)
-    }
+    end
 end
 
 -- Create Phone Prop
@@ -139,7 +150,7 @@ end)
 
 -- Initialize
 CreateThread(function()
-    while not SLCore.Functions.IsPlayerLoaded() do
+    while not SLCore or not SLCore.Functions.IsPlayerLoaded() do
         Wait(100)
     end
     

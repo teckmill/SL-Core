@@ -138,6 +138,26 @@ local function RunMigrations()
     dir:close()
 end
 
+-- Initialize Database Tables
+CreateThread(function()
+    MySQL.ready(function()
+        -- Load and execute SQL file
+        local sqlFile = LoadResourceFile(GetCurrentResourceName(), 'sql/tables.sql')
+        if sqlFile then
+            -- Split and execute SQL statements
+            for statement in sqlFile:gmatch("([^;]+);") do
+                statement = statement:gsub("^%s+", ""):gsub("%s+$", "") -- Trim whitespace
+                if statement ~= "" then
+                    MySQL.Sync.execute(statement)
+                end
+            end
+            print('[SL-Database] Database tables initialized successfully')
+        else
+            print('[SL-Database] Error: Could not load SQL file')
+        end
+    end)
+end)
+
 -- Exports
 exports('ExecuteQuery', ExecuteQuery)
 exports('GetCachedQuery', GetCachedQuery)
