@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SL Inventory</title>
+    
+    <!-- Styles -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery-contextmenu/2.9.2/jquery.contextMenu.min.css">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <!-- Main Inventory Container -->
+    <div id="inventory-container">
+        <!-- Player Inventory -->
+        <div class="inventory-section">
+            <div id="player-inventory" class="inventory-grid"></div>
+        </div>
+
+        <!-- Secondary Inventory (Trunk, Shop, etc.) -->
+        <div class="inventory-section">
+            <div id="secondary-inventory" class="inventory-grid"></div>
+        </div>
+
+        <!-- Weight Bar -->
+        <div id="weight-container">
+            <div id="weight-bar"></div>
+            <div id="weight-text">0.0/0.0kg</div>
+        </div>
+
+        <!-- Item Info Panel -->
+        <div id="item-info"></div>
+    </div>
+
+    <!-- Hotbar -->
+    <div id="hotbar"></div>
+
+    <!-- Notifications Container -->
+    <div id="notifications"></div>
+
+    <!-- Scripts -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://code.jquery.com/ui/1.13.2/jquery-ui.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-contextmenu/2.9.2/jquery.contextMenu.min.js"></script>
+    <script src="config.js"></script>
+    <script src="app.js"></script>
+</body>
+</html>
