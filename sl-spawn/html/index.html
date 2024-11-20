@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SL Spawn</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div id="spawn-container" class="hidden">
+        <div class="spawn-header">
+            <h1>Select Spawn Location</h1>
+            <div class="spawn-tabs">
+                <button class="tab-btn active" data-tab="last">Last Location</button>
+                <button class="tab-btn" data-tab="spawns">Locations</button>
+                <button class="tab-btn" data-tab="apartments">Apartments</button>
+                <button class="tab-btn" data-tab="hotels">Hotels</button>
+            </div>
+        </div>
+
+        <div class="spawn-content">
+            <!-- Last Location -->
+            <div class="spawn-tab active" id="last-tab">
+                <div class="location-card" id="last-location">
+                    <div class="location-icon">
+                        <i class="fas fa-map-marker-alt"></i>
+                    </div>
+                    <div class="location-info">
+                        <h3>Last Location</h3>
+                        <p>Continue where you left off</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Spawn Locations -->
+            <div class="spawn-tab" id="spawns-tab">
+                <div class="location-grid" id="spawn-locations"></div>
+            </div>
+
+            <!-- Apartments -->
+            <div class="spawn-tab" id="apartments-tab">
+                <div class="location-grid" id="apartment-locations"></div>
+            </div>
+
+            <!-- Hotels -->
+            <div class="spawn-tab" id="hotels-tab">
+                <div class="location-grid" id="hotel-locations"></div>
+            </div>
+        </div>
+
+        <div class="spawn-footer">
+            <div class="weather-info">
+                <i class="fas fa-cloud-sun"></i>
+                <span id="weather-text">Clear</span>
+            </div>
+            <div class="time-info">
+                <i class="fas fa-clock"></i>
+                <span id="time-text">12:00</span>
+            </div>
+            <button id="spawn-btn" class="spawn-button">
+                <i class="fas fa-check"></i>
+                Spawn Here
+            </button>
+        </div>
+    </div>
+
+    <!-- Location Card Template -->
+    <template id="location-card-template">
+        <div class="location-card">
+            <div class="location-image">
+                <img src="" alt="">
+                <div class="location-overlay">
+                    <i class="location-icon"></i>
+                </div>
+            </div>
+            <div class="location-info">
+                <h3 class="location-name"></h3>
+                <p class="location-description"></p>
+                <div class="location-meta">
+                    <span class="location-population">
+                        <i class="fas fa-users"></i>
+                        <span class="population-count">0</span>
+                    </span>
+                    <span class="location-distance">
+                        <i class="fas fa-road"></i>
+                        <span class="distance-value">0m</span>
+                    </span>
+                </div>
+            </div>
+        </div>
+    </template>
+
+    <script src="script.js"></script>
+</body>
+</html>

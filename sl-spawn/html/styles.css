@@ -1,0 +1,272 @@
+/* Reset and Base Styles */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Poppins', sans-serif;
+}
+
+body {
+    width: 100vw;
+    height: 100vh;
+    overflow: hidden;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: transparent;
+}
+
+/* Container */
+#spawn-container {
+    width: 80vw;
+    max-width: 1200px;
+    height: 80vh;
+    background: rgba(15, 15, 15, 0.9);
+    border-radius: 15px;
+    backdrop-filter: blur(10px);
+    display: flex;
+    flex-direction: column;
+    padding: 2rem;
+    color: #fff;
+    opacity: 0;
+    transform: translateY(20px);
+    transition: all 0.3s ease;
+}
+
+#spawn-container.visible {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+/* Header */
+.spawn-header {
+    text-align: center;
+    margin-bottom: 2rem;
+}
+
+.spawn-header h1 {
+    font-size: 2.5rem;
+    margin-bottom: 1.5rem;
+    font-weight: 600;
+}
+
+/* Tabs */
+.spawn-tabs {
+    display: flex;
+    justify-content: center;
+    gap: 1rem;
+    margin-bottom: 2rem;
+}
+
+.tab-btn {
+    background: rgba(255, 255, 255, 0.1);
+    border: none;
+    padding: 0.8rem 1.5rem;
+    border-radius: 8px;
+    color: #fff;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.tab-btn:hover {
+    background: rgba(255, 255, 255, 0.2);
+}
+
+.tab-btn.active {
+    background: #4CAF50;
+}
+
+/* Content */
+.spawn-content {
+    flex: 1;
+    overflow-y: auto;
+    padding-right: 1rem;
+}
+
+.spawn-tab {
+    display: none;
+    opacity: 0;
+    transform: translateX(20px);
+    transition: all 0.3s ease;
+}
+
+.spawn-tab.active {
+    display: block;
+    opacity: 1;
+    transform: translateX(0);
+}
+
+/* Location Cards */
+.location-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 1.5rem;
+}
+
+.location-card {
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 12px;
+    overflow: hidden;
+    transition: all 0.3s ease;
+    cursor: pointer;
+}
+
+.location-card:hover {
+    transform: translateY(-5px);
+    background: rgba(255, 255, 255, 0.15);
+}
+
+.location-image {
+    position: relative;
+    height: 160px;
+    overflow: hidden;
+}
+
+.location-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.location-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(0deg, rgba(0,0,0,0.7) 0%, rgba(0,0,0,0) 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.location-icon {
+    font-size: 2rem;
+    color: #fff;
+    text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+}
+
+.location-info {
+    padding: 1.5rem;
+}
+
+.location-info h3 {
+    font-size: 1.2rem;
+    margin-bottom: 0.5rem;
+}
+
+.location-info p {
+    color: rgba(255, 255, 255, 0.7);
+    font-size: 0.9rem;
+    margin-bottom: 1rem;
+}
+
+.location-meta {
+    display: flex;
+    justify-content: space-between;
+    color: rgba(255, 255, 255, 0.6);
+    font-size: 0.8rem;
+}
+
+/* Footer */
+.spawn-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 2rem;
+    padding-top: 1rem;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.weather-info, .time-info {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: rgba(255, 255, 255, 0.7);
+}
+
+.spawn-button {
+    background: #4CAF50;
+    border: none;
+    padding: 0.8rem 2rem;
+    border-radius: 8px;
+    color: #fff;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.spawn-button:hover {
+    background: #45a049;
+}
+
+/* Scrollbar */
+::-webkit-scrollbar {
+    width: 6px;
+}
+
+::-webkit-scrollbar-track {
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.3);
+    border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: rgba(255, 255, 255, 0.4);
+}
+
+/* Animations */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.hidden {
+    display: none;
+}
+
+/* Responsive Design */
+@media screen and (max-width: 768px) {
+    #spawn-container {
+        width: 95vw;
+        height: 95vh;
+        padding: 1rem;
+    }
+
+    .spawn-header h1 {
+        font-size: 2rem;
+    }
+
+    .location-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* Dark Mode */
+.dark-mode {
+    background: rgba(10, 10, 10, 0.95);
+}
+
+.dark-mode .location-card {
+    background: rgba(30, 30, 30, 0.8);
+}
+
+/* Loading State */
+.loading {
+    opacity: 0.7;
+    pointer-events: none;
+}
